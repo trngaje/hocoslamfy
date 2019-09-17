@@ -21,10 +21,11 @@
 #define _MAIN_H_
 
 #include <stdbool.h>
-#include "SDL.h"
+#include <SDL/SDL_stdinc.h>
+#include <SDL/SDL_video.h>
 
-#include "title.h"
 #include "bg.h"
+#include "title.h"
 
 typedef void (*TGatherInput) (bool* Continue);
 typedef void (*TDoLogic) (bool* Continue, bool* Error, Uint32 Milliseconds);

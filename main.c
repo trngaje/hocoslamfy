@@ -17,15 +17,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include <stdbool.h>
-#include <stddef.h>
-
-#include "SDL.h"
-
 #include "main.h"
+
+#include <stddef.h>
+#include <SDL/SDL_events.h>
+
 #include "init.h"
 #include "platform.h"
-#include "SDL_image.h"
 
 static bool         Continue                             = true;
 static bool         Error                                = false;

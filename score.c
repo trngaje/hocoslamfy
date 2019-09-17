@@ -28,7 +28,7 @@
 #include <pwd.h>
 #endif
 
-#include "SDL.h"
+#include <SDL/SDL.h>
 
 #include "main.h"
 #include "init.h"

@@ -17,15 +17,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include <stdbool.h>
-#include <stddef.h>
-
-#include "SDL.h"
-#include "SDL_image.h"
-
-#include "main.h"
 #include "init.h"
+
+#include <stdio.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_error.h>
+#include <SDL/SDL_image.h>
+#include <SDL/SDL_mouse.h>
+#include <SDL/SDL_video.h>
+
 #include "audio.h"
+#include "bg.h"
+#include "main.h"
 #include "platform.h"
 #include "title.h"
 
