@@ -1,4 +1,4 @@
-hocoslamfy
+hocoslamfy, ported for the Bittboy and Pocket-Go
 
 You are a small bee and you must fly to avoid the bamboo shoots!
 
