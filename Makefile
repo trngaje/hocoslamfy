@@ -1,6 +1,6 @@
-TARGET      ?= hocoslamfy-od
+TARGET      ?= hocoslamfy
 
-ifeq ($(TARGET), hocoslamfy-od)
+ifeq ($(TARGET), hocoslamfy)
   CC        := /opt/bittboy-toolchain/bin/arm-buildroot-linux-musleabi-gcc
   STRIP     := /opt/bittboy-toolchain/bin/arm-buildroot-linux-musleabi-strip
   OBJS       = platform/opendingux.o
