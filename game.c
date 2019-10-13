@@ -83,6 +83,7 @@ static uint32_t               RectangleCount = 0;
 static float                  GenDistance;
 
 int motordev=-1;
+int fd=0;
 
 
 void GameGatherInput(bool* Continue)
@@ -104,7 +105,16 @@ void GameGatherInput(bool* Continue)
 }
 
 void ToggleRumble(bool rumble){
-	ioctl(motordev, MIYOO_VIR_SET_MODE, rumble ? 0 : 1);	
+	if(rumble) {
+		if(!fd)
+			fd = open("/dev/input/event1", O_RDWR);
+	} else {
+		if(fd) {
+			close(fd);
+			fd = 0;
+		}
+	}
+	//ioctl(motordev, MIYOO_VIR_SET_MODE, rumble ? 0 : 1);	
 }
 
 static void SetStatus(const enum PlayerStatus NewStatus)
@@ -142,7 +152,7 @@ static void AnimationControl(Uint32 Milliseconds)
 			// Then add milliseconds for the current frame.
 			PlayerFrameTime = (PlayerFrameTime + Remainder) % ANIMATION_TIME;
 			ToggleRumble(false);
-			close(motordev);
+			//close(motordev);
 			break;
 
 		case COLLIDED:
@@ -477,8 +487,8 @@ void GameOutputFrame()
 
 void ToGame(void)
 {
-	motordev=-1;
-        motordev = open("/dev/miyoo_vir", O_RDWR);
+	//motordev=-1;
+        //motordev = open("/dev/miyoo_vir", O_RDWR);
 	Score = 0;
 	Boost = false;
 	Pause = false;

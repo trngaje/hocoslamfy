@@ -1,8 +1,8 @@
-TARGET      ?= hocoslamfy
+TARGET      ?= hocoslamfy-od
 
-ifeq ($(TARGET), hocoslamfy)
-  CC        := /opt/bittboy-toolchain/bin/arm-buildroot-linux-musleabi-gcc
-  STRIP     := /opt/bittboy-toolchain/bin/arm-buildroot-linux-musleabi-strip
+ifeq ($(TARGET), hocoslamfy-od)
+  CC        := mipsel-linux-gcc
+  STRIP     := mipsel-linux-strip
   OBJS       = platform/opendingux.o
   DEFS      := -DOPK
 else
@@ -26,7 +26,7 @@ DEFS        +=
 
 CFLAGS       = $(SDL_CFLAGS) -Wall -Wno-unused-variable \
                -O2 -fomit-frame-pointer $(DEFS) $(INCLUDE)
-LDFLAGS     := $(SDL_LIBS) -lm -lSDL_image -lSDL_mixer -lstdc++ -lrt -lpthread -ldl -lasound -lSDL_mixer -lmikmod -lvorbisidec -logg -lm -lSDL_image -lpng -ljpeg -lSDL_ttf -lfreetype -lz -lSDL
+LDFLAGS     := $(SDL_LIBS) -lm -lSDL_image -lSDL_mixer
 
 ifneq (, $(findstring MINGW, $(shell uname -s)))
 	CFLAGS+=-DDONT_USE_PWD
