@@ -29,8 +29,14 @@
 #include "audio.h"
 #include "bg.h"
 #include "main.h"
+#include "game.h"
 #include "platform.h"
 #include "title.h"
+#include <shake.h>
+
+Shake_Device *device;
+Shake_Effect flap_effect, crash_effect;
+int flap_effect_id, crash_effect_id;
 
 static const char* BackgroundImageNames[BG_LAYER_COUNT] = {
 	"Sky.png",
@@ -175,6 +181,28 @@ void Initialize(bool* Continue, bool* Error)
 		return;
 
 	InitializePlatform();
+
+	// Title screen. (-> title.c)
+	Shake_Status ss;
+	ss = Shake_Init();
+        printf("Rumble Status: %d\n", ss);
+        device = Shake_Open(0);
+
+        Shake_InitEffect(&flap_effect, SHAKE_EFFECT_RUMBLE);
+        flap_effect.u.rumble.strongMagnitude = SHAKE_RUMBLE_STRONG_MAGNITUDE_MAX;
+        flap_effect.u.rumble.weakMagnitude = SHAKE_RUMBLE_WEAK_MAGNITUDE_MAX;
+        flap_effect.length = 500;
+        flap_effect.delay = 0;
+
+        Shake_InitEffect(&crash_effect, SHAKE_EFFECT_RUMBLE);
+        crash_effect.u.rumble.strongMagnitude = SHAKE_RUMBLE_STRONG_MAGNITUDE_MAX;
+        crash_effect.u.rumble.weakMagnitude = SHAKE_RUMBLE_WEAK_MAGNITUDE_MAX;
+        crash_effect.length = 1000;
+        crash_effect.delay = 0;
+
+        flap_effect_id = Shake_UploadEffect(device, &flap_effect);
+        crash_effect_id = Shake_UploadEffect(device, &crash_effect);
+
 	if (!InitializeAudio())
 	{
 		*Continue = false;  *Error = true;
@@ -183,7 +211,7 @@ void Initialize(bool* Continue, bool* Error)
 	else
 		StartBGM();
 
-	// Title screen. (-> title.c)
+
 	ToTitleScreen();
 }
 
@@ -208,5 +236,13 @@ void Finalize()
 	ColumnImage = NULL;
 	SDL_FreeSurface(GameOverFrame);
 	GameOverFrame = NULL;
+
+	Shake_Stop(device, flap_effect_id);
+        Shake_Stop(device, crash_effect_id);
+
+        Shake_EraseEffect(device, flap_effect_id);
+        Shake_EraseEffect(device, crash_effect_id);
+        Shake_Close(device);
+        Shake_Quit();
 	SDL_Quit();
 }

@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+#include <shake.h>
+
 #ifndef _GAME_H_
 #define _GAME_H_
 
@@ -118,7 +120,5 @@ enum PlayerStatus
 	COLLIDED,
 	DYING
 };
-
-extern void ToGame(void);
 
 #endif /* !defined(_GAME_H_) */
