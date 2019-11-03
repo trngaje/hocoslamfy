@@ -243,10 +243,12 @@ void GameDoLogic(bool* Continue, bool* Error, Uint32 Milliseconds)
 				// [PlayerSpeed += SPEED_BOOST;].
 				PlayerSpeed = SPEED_BOOST;
 				Boost = false;
+				Shake_Stop(device, flap_effect_id);
+				Shake_Stop(device, flap_effect_id1);
+				Shake_Play(device, flap_effect_id);
+				Shake_Play(device, flap_effect_id1);
 				PlaySFXFly();
-				Shake_Status ss;
-				ss = Shake_Play(device, flap_effect_id);
-        			printf("Rumble Status: %d\n", ss);
+        			//printf("Rumble Status: %d\n", ss);
 
 			}
 			// Update the player's position.

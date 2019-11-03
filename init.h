@@ -34,8 +34,8 @@
 
 extern Shake_Device *device;
 extern void ToGame(void);
-extern Shake_Effect flap_effect, crash_effect;
-extern int flap_effect_id, crash_effect_id;
+extern Shake_Effect flap_effect, flap_effect1, crash_effect;
+extern int flap_effect_id, flap_effect_id1, crash_effect_id;
 
 
 void Initialize(bool* Continue, bool* Error);
