@@ -82,6 +82,10 @@ void TitleScreenGatherInput(bool* Continue)
 			}
 			return;
 		}
+		else if (IsRumbleEvent(&ev))
+		{
+			Rumble = !Rumble;
+		}
 	}
 }
 

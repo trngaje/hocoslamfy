@@ -43,7 +43,6 @@ static uint32_t               Score;
 
 static bool                   Boost;
 static bool                   Pause;
-static bool                   Rumble;
 static enum PlayerStatus      PlayerStatus;
 
 // Where the player is. (Center, meters.)
@@ -464,7 +463,6 @@ void ToGame(void)
 	Score = 0;
 	Boost = false;
 	Pause = false;
-	Rumble = true;
 	SetStatus(ALIVE);
 	PlayerX = FIELD_WIDTH / 4;
 	PlayerY = FIELD_HEIGHT / 2;
