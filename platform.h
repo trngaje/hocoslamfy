@@ -52,3 +52,6 @@ const char* GetBoostPrompt(void);
 
 bool IsPauseEvent(const SDL_Event* event);
 const char* GetPausePrompt(void);
+
+bool IsRumbleEvent(const SDL_Event* event);
+const char* GetRumblePrompt(void);

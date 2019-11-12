@@ -49,6 +49,7 @@ static uint32_t               Score;
 
 static bool                   Boost;
 static bool                   Pause;
+static bool                   Rumble;
 static enum PlayerStatus      PlayerStatus;
 
 // Where the player is. (Center, meters.)
@@ -95,6 +96,8 @@ void GameGatherInput(bool* Continue)
 			Boost = true;
 		else if (IsPauseEvent(&ev) && PlayerStatus == ALIVE)
 			Pause = !Pause;
+		else if (IsRumbleEvent(&ev))
+			Rumble = !Rumble;
 		else if (IsExitGameEvent(&ev))
 		{
 			*Continue = false;
@@ -260,8 +263,10 @@ void GameDoLogic(bool* Continue, bool* Error, Uint32 Milliseconds)
 				PlayerSpeed = SPEED_BOOST;
 				Boost = false;
 				PlaySFXFly();
-				ToggleRumble(true);
-				PlayerRumbleTime = 1;
+				if (Rumble) {
+					ToggleRumble(true);
+					PlayerRumbleTime = 1;
+				}
 			}
 			// Update the player's position.
 			// If the player's position has collided with the borders of the field,
@@ -482,6 +487,7 @@ void ToGame(void)
 	Score = 0;
 	Boost = false;
 	Pause = false;
+	Rumble = true;
 	SetStatus(ALIVE);
 	PlayerX = FIELD_WIDTH / 4;
 	PlayerY = FIELD_HEIGHT / 2;
