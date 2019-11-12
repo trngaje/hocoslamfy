@@ -86,6 +86,17 @@ bool IsPauseEvent(const SDL_Event* event)
 	    && event->key.keysym.sym == SDLK_RETURN /* Start */;
 }
 
+bool IsRumbleEvent(const SDL_Event* event)
+{
+	return event->type == SDL_KEYDOWN
+	    && event->key.keysym.sym == SDLK_TAB;
+}
+
+const char* GetRumblePrompt(void)
+{
+	return "L1";
+}
+
 const char* GetPausePrompt(void)
 {
 	return "Start";

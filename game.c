@@ -43,6 +43,7 @@ static uint32_t               Score;
 
 static bool                   Boost;
 static bool                   Pause;
+static bool                   Rumble;
 static enum PlayerStatus      PlayerStatus;
 
 // Where the player is. (Center, meters.)
@@ -83,6 +84,8 @@ void GameGatherInput(bool* Continue)
 			Boost = true;
 		else if (IsPauseEvent(&ev) && PlayerStatus == ALIVE)
 			Pause = !Pause;
+		else if (IsRumbleEvent(&ev))
+			Rumble = !Rumble;
 		else if (IsExitGameEvent(&ev))
 		{
 			*Continue = false;
@@ -97,8 +100,9 @@ static void SetStatus(const enum PlayerStatus NewStatus)
 	if (NewStatus == COLLIDED && PlayerStatus != COLLIDED)
 	{
 		Shake_Status ss;
-		ss = Shake_Play(device, crash_effect_id);
-        	printf("Rumble Status: %d\n", ss);
+    if (Rumble) {
+		  ss = Shake_Play(device, crash_effect_id);
+    }
 		PlaySFXCollision();
 	}
 	PlayerStatus = NewStatus;
@@ -245,11 +249,11 @@ void GameDoLogic(bool* Continue, bool* Error, Uint32 Milliseconds)
 				Boost = false;
 				Shake_Stop(device, flap_effect_id);
 				Shake_Stop(device, flap_effect_id1);
-				Shake_Play(device, flap_effect_id);
-				Shake_Play(device, flap_effect_id1);
+        if (Rumble) {
+				  Shake_Play(device, flap_effect_id);
+				  Shake_Play(device, flap_effect_id1);
+        }
 				PlaySFXFly();
-        			//printf("Rumble Status: %d\n", ss);
-
 			}
 			// Update the player's position.
 			// If the player's position has collided with the borders of the field,
@@ -460,6 +464,7 @@ void ToGame(void)
 	Score = 0;
 	Boost = false;
 	Pause = false;
+	Rumble = true;
 	SetStatus(ALIVE);
 	PlayerX = FIELD_WIDTH / 4;
 	PlayerY = FIELD_HEIGHT / 2;

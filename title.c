@@ -148,7 +148,7 @@ void ToTitleScreen(void)
 	{
 		int Length = 2, NewLength;
 		WelcomeMessage = malloc(Length);
-		while ((NewLength = snprintf(WelcomeMessage, Length, "Press %s to play\nor %s to exit\n\nIn-game:\n%s to rise\n%s to pause\n%s to exit", GetEnterGamePrompt(), GetExitGamePrompt(), GetBoostPrompt(), GetPausePrompt(), GetExitGamePrompt())) >= Length)
+		while ((NewLength = snprintf(WelcomeMessage, Length, "Press %s to play\nor %s to exit\n\nIn-game:\n%s to rise\n%s to pause\n%s to disable rumble\n%s to exit", GetEnterGamePrompt(), GetExitGamePrompt(), GetBoostPrompt(), GetPausePrompt(), GetRumblePrompt(), GetExitGamePrompt())) >= Length)
 		{
 			Length = NewLength + 1;
 			WelcomeMessage = realloc(WelcomeMessage, Length);
