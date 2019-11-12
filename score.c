@@ -179,7 +179,7 @@ void SaveHighScore(uint32_t Score)
 	snprintf(path, 256, "%s/%s", pw->pw_dir, SavePath);
 	MkDir(path);
 	
-	snprintf(path, 256, "./highscore");
+	snprintf(path, 256, "%s/%s/%s", pw->pw_dir, SavePath, HighScoreFilePath);
 #else
 	snprintf(path, 256, "./highscore");
 #endif
@@ -216,7 +216,7 @@ uint32_t GetHighScore()
 	char path[256];
 #ifndef DONT_USE_PWD
 	struct passwd *pw = getpwuid(getuid());
-	snprintf(path, 256, "./highscore");
+	snprintf(path, 256, "%s/%s/%s", pw->pw_dir, SavePath, HighScoreFilePath);
 #else
 	snprintf(path, 256, "./highscore");
 #endif

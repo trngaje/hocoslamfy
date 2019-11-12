@@ -21,6 +21,7 @@
 #define _INIT_H_
 
 #include <stdbool.h>
+#include <shake.h>
 
 #define SCREEN_WIDTH  320
 #define SCREEN_HEIGHT 240
@@ -30,6 +31,12 @@
 #else
 #define DATA_PATH "./data/"
 #endif
+
+extern Shake_Device *device;
+extern void ToGame(void);
+extern Shake_Effect flap_effect, flap_effect1, crash_effect;
+extern int flap_effect_id, flap_effect_id1, crash_effect_id;
+
 
 void Initialize(bool* Continue, bool* Error);
 void Finalize(void);

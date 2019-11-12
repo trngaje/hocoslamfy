@@ -36,14 +36,8 @@
 #include "bg.h"
 #include "text.h"
 #include "audio.h"
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
 
-#define MIYOO_VIR_SET_MODE    _IOWR(0x100, 0, unsigned long)
-
+#include <shake.h>
 
 static uint32_t               Score;
 
@@ -71,9 +65,6 @@ static bool                   PlayerBlinking;
 // Time the player's character has left before blinking, if Blinking is false.
 static uint32_t               PlayerBlinkTime;
 
-//time rumble started
-static uint32_t               PlayerRumbleTime = 0;
-
 // Passed to the score screen after the player is done dying.
 static enum GameOverReason    GameOverReason;
 
@@ -82,9 +73,6 @@ static struct HocoslamfyRect* Rectangles     = NULL;
 static uint32_t               RectangleCount = 0;
 
 static float                  GenDistance;
-
-int motordev=-1;
-
 
 void GameGatherInput(bool* Continue)
 {
@@ -106,16 +94,15 @@ void GameGatherInput(bool* Continue)
 	}
 }
 
-void ToggleRumble(bool rumble){
-	ioctl(motordev, MIYOO_VIR_SET_MODE, rumble ? 0 : 1);	
-}
-
 static void SetStatus(const enum PlayerStatus NewStatus)
 {
 	PlayerFrameTime = 0;
 	if (NewStatus == COLLIDED && PlayerStatus != COLLIDED)
 	{
-		ToggleRumble(true);
+		Shake_Status ss;
+    if (Rumble) {
+		  ss = Shake_Play(device, crash_effect_id);
+    }
 		PlaySFXCollision();
 	}
 	PlayerStatus = NewStatus;
@@ -144,8 +131,6 @@ static void AnimationControl(Uint32 Milliseconds)
 			PlayerFrame = (PlayerFrame + (PlayerFrameTime + Remainder) / ANIMATION_TIME) % ANIMATION_FRAMES;
 			// Then add milliseconds for the current frame.
 			PlayerFrameTime = (PlayerFrameTime + Remainder) % ANIMATION_TIME;
-			ToggleRumble(false);
-			close(motordev);
 			break;
 
 		case COLLIDED:
@@ -262,11 +247,13 @@ void GameDoLogic(bool* Continue, bool* Error, Uint32 Milliseconds)
 				// [PlayerSpeed += SPEED_BOOST;].
 				PlayerSpeed = SPEED_BOOST;
 				Boost = false;
+				Shake_Stop(device, flap_effect_id);
+				Shake_Stop(device, flap_effect_id1);
+        if (Rumble) {
+				  Shake_Play(device, flap_effect_id);
+				  Shake_Play(device, flap_effect_id1);
+        }
 				PlaySFXFly();
-				if (Rumble) {
-					ToggleRumble(true);
-					PlayerRumbleTime = 1;
-				}
 			}
 			// Update the player's position.
 			// If the player's position has collided with the borders of the field,
@@ -277,15 +264,6 @@ void GameDoLogic(bool* Continue, bool* Error, Uint32 Milliseconds)
 				SetStatus(COLLIDED);
 				GameOverReason = FIELD_BORDER_COLLISION;
 				break;
-			}
-
-			if(PlayerRumbleTime > 0) {
-				if (PlayerRumbleTime > 5000) {
-					ToggleRumble(false);
-					PlayerRumbleTime=0;
-				} else {
-					PlayerRumbleTime += Milliseconds;
-				}
 			}
 
 			// Collision detection.
@@ -482,8 +460,7 @@ void GameOutputFrame()
 
 void ToGame(void)
 {
-	motordev=-1;
-        motordev = open("/dev/miyoo_vir", O_RDWR);
+
 	Score = 0;
 	Boost = false;
 	Pause = false;
