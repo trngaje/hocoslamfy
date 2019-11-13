@@ -83,8 +83,9 @@ void GameGatherInput(bool* Continue)
 			Boost = true;
 		else if (IsPauseEvent(&ev) && PlayerStatus == ALIVE)
 			Pause = !Pause;
-		else if (IsRumbleEvent(&ev))
+		else if (IsRumbleEvent(&ev)) {
 			Rumble = !Rumble;
+		}
 		else if (IsExitGameEvent(&ev))
 		{
 			*Continue = false;
@@ -99,7 +100,7 @@ static void SetStatus(const enum PlayerStatus NewStatus)
 	if (NewStatus == COLLIDED && PlayerStatus != COLLIDED)
 	{
 		Shake_Status ss;
-    if (Rumble) {
+    if (Rumble==true) {
 		  ss = Shake_Play(device, crash_effect_id);
     }
 		PlaySFXCollision();
@@ -248,7 +249,7 @@ void GameDoLogic(bool* Continue, bool* Error, Uint32 Milliseconds)
 				Boost = false;
 				Shake_Stop(device, flap_effect_id);
 				Shake_Stop(device, flap_effect_id1);
-        if (Rumble) {
+        if (Rumble==true) {
 				  Shake_Play(device, flap_effect_id);
 				  Shake_Play(device, flap_effect_id1);
         }

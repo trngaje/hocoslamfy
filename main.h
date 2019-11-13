@@ -27,7 +27,7 @@
 #include "bg.h"
 #include "title.h"
 
-static bool Rumble;
+bool Rumble;
 
 typedef void (*TGatherInput) (bool* Continue);
 typedef void (*TDoLogic) (bool* Continue, bool* Error, Uint32 Milliseconds);

@@ -72,12 +72,13 @@ bool IsBoostEvent(const SDL_Event* event)
 	    && (event->key.keysym.sym == SDLK_LCTRL  /* A */
 	     || event->key.keysym.sym == SDLK_LALT   /* B */
 	     || event->key.keysym.sym == SDLK_LSHIFT /* GCW Zero: X; Dingoo A320: Y */
-	     || event->key.keysym.sym == SDLK_SPACE  /* GCW Zero: Y; Dingoo A320: X */);
+	     || event->key.keysym.sym == SDLK_SPACE  /* GCW Zero: Y; Dingoo A320: X */
+         || event->key.keysym.sym == SDLK_UP     /* GCW Zero: Y; Dingoo A320: UP */);
 }
 
 const char* GetBoostPrompt(void)
 {
-	return "A/B/X/Y";
+	return "A/B/X/Y/UP";
 }
 
 bool IsPauseEvent(const SDL_Event* event)

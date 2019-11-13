@@ -39,19 +39,33 @@ static uint32_t HeaderFrame       = 0;
 static Uint32   HeaderFrameTime   = 0;
 
 static const uint32_t HeaderFrameAnimation[TITLE_ANIMATION_FRAMES] = {
-	0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, /* up */
-	0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1,
-	0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 2, 3, /* blink */
-	0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1,
-	0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 2, 3, /* blink */
-	0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1,
-	4, 5, 4, 5, 4, 5, 4, 5, 4, 5, 4, 5, /* down */
-	4, 5, 4, 5, 4, 5, 4, 5, 4, 5, 4, 5,
-	4, 5, 4, 5, 4, 5, 4, 5, 4, 5, 6, 7, /* blink */
-	4, 5, 4, 5, 4, 5, 4, 5, 4, 5, 4, 5,
-	4, 5, 4, 5, 4, 5, 4, 5, 4, 5, 6, 7, /* blink */
-	4, 5, 4, 5, 4, 5, 4, 5, 4, 5, 4, 5,
+		0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, /* up */
+		0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1,
+		0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 2, 3, /* blink */
+		0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1,
+		0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 2, 3, /* blink */
+		0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1,
+		4, 5, 4, 5, 4, 5, 4, 5, 4, 5, 4, 5, /* down */
+		4, 5, 4, 5, 4, 5, 4, 5, 4, 5, 4, 5,
+		4, 5, 4, 5, 4, 5, 4, 5, 4, 5, 6, 7, /* blink */
+		4, 5, 4, 5, 4, 5, 4, 5, 4, 5, 4, 5,
+		4, 5, 4, 5, 4, 5, 4, 5, 4, 5, 6, 7, /* blink */
+		4, 5, 4, 5, 4, 5, 4, 5, 4, 5, 4, 5,
 };
+
+void setWelcomeMessage()
+{
+	if (WelcomeMessage == NULL)
+	{
+		int Length = 2, NewLength;
+		WelcomeMessage = malloc(Length);
+		while ((NewLength = snprintf(WelcomeMessage, Length, "Press %s to play\nor %s to exit\n\nIn-game:\n%s to rise\n%s to pause\n%s to %s rumble\n%s to exit", GetEnterGamePrompt(), GetExitGamePrompt(), GetBoostPrompt(), GetPausePrompt(), GetRumblePrompt(), Rumble==true?"disable":"enable", GetExitGamePrompt())) >= Length)
+		{
+			Length = NewLength + 1;
+			WelcomeMessage = realloc(WelcomeMessage, Length);
+		}
+	}
+}
 
 void TitleScreenGatherInput(bool* Continue)
 {
@@ -85,6 +99,9 @@ void TitleScreenGatherInput(bool* Continue)
 		else if (IsRumbleEvent(&ev))
 		{
 			Rumble = !Rumble;
+			free(WelcomeMessage);
+			WelcomeMessage=NULL;
+			setWelcomeMessage();
 		}
 	}
 }
@@ -114,32 +131,32 @@ void TitleScreenOutputFrame()
 	DrawBackground();
 
 	SDL_Rect HeaderDestRect = {
-		.x = (SCREEN_WIDTH - TitleScreenFrames[0]->w) / 2,
-		.y = ((SCREEN_HEIGHT / 4) - TitleScreenFrames[0]->h) / 2,
-		.w = TitleScreenFrames[0]->w,
-		.h = TitleScreenFrames[0]->h
+			.x = (SCREEN_WIDTH - TitleScreenFrames[0]->w) / 2,
+			.y = ((SCREEN_HEIGHT / 4) - TitleScreenFrames[0]->h) / 2,
+			.w = TitleScreenFrames[0]->w,
+			.h = TitleScreenFrames[0]->h
 	};
 	SDL_Rect HeaderSourceRect = {
-		.x = 0,
-		.y = 0,
-		.w = TitleScreenFrames[0]->w,
-		.h = TitleScreenFrames[0]->h
+			.x = 0,
+			.y = 0,
+			.w = TitleScreenFrames[0]->w,
+			.h = TitleScreenFrames[0]->h
 	};
 	SDL_BlitSurface(TitleScreenFrames[HeaderFrameAnimation[HeaderFrame]], &HeaderSourceRect, Screen, &HeaderDestRect);
 
 	if (SDL_MUSTLOCK(Screen))
 		SDL_LockSurface(Screen);
 	PrintStringOutline32(WelcomeMessage,
-		SDL_MapRGB(Screen->format, 255, 255, 255),
-		SDL_MapRGB(Screen->format, 0, 0, 0),
-		Screen->pixels,
-		Screen->pitch,
-		0,
-		SCREEN_HEIGHT / 4,
-		SCREEN_WIDTH,
-		SCREEN_HEIGHT - (SCREEN_HEIGHT / 4),
-		CENTER,
-		MIDDLE);
+			SDL_MapRGB(Screen->format, 255, 255, 255),
+			SDL_MapRGB(Screen->format, 0, 0, 0),
+			Screen->pixels,
+			Screen->pitch,
+			0,
+			SCREEN_HEIGHT / 4,
+			SCREEN_WIDTH,
+			SCREEN_HEIGHT - (SCREEN_HEIGHT / 4),
+			CENTER,
+			MIDDLE);
 	if (SDL_MUSTLOCK(Screen))
 		SDL_UnlockSurface(Screen);
 
@@ -148,17 +165,7 @@ void TitleScreenOutputFrame()
 
 void ToTitleScreen(void)
 {
-	if (WelcomeMessage == NULL)
-	{
-		int Length = 2, NewLength;
-		WelcomeMessage = malloc(Length);
-		while ((NewLength = snprintf(WelcomeMessage, Length, "Press %s to play\nor %s to exit\n\nIn-game:\n%s to rise\n%s to pause\n%s to disable rumble\n%s to exit", GetEnterGamePrompt(), GetExitGamePrompt(), GetBoostPrompt(), GetPausePrompt(), GetRumblePrompt(), GetExitGamePrompt())) >= Length)
-		{
-			Length = NewLength + 1;
-			WelcomeMessage = realloc(WelcomeMessage, Length);
-		}
-	}
-
+	setWelcomeMessage();
 	GatherInput = TitleScreenGatherInput;
 	DoLogic     = TitleScreenDoLogic;
 	OutputFrame = TitleScreenOutputFrame;

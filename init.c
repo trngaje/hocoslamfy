@@ -39,25 +39,25 @@ Shake_Effect flap_effect, flap_effect1, crash_effect;
 int flap_effect_id, flap_effect_id1, crash_effect_id;
 
 static const char* BackgroundImageNames[BG_LAYER_COUNT] = {
-	"Sky.png",
-	"Mountains.png",
-	"Clouds3.png",
-	"Clouds2.png",
-	"Clouds1.png",
-	"Grass3.png",
-	"Grass2.png",
-	"Grass1.png"
+		"Sky.png",
+		"Mountains.png",
+		"Clouds3.png",
+		"Clouds2.png",
+		"Clouds1.png",
+		"Grass3.png",
+		"Grass2.png",
+		"Grass1.png"
 };
 
 static const char* TitleScreenFrameNames[TITLE_FRAME_COUNT] = {
-	"TitleHeader1.png",
-	"TitleHeader2.png",
-	"TitleHeader3.png",
-	"TitleHeader4.png",
-	"TitleHeader5.png",
-	"TitleHeader6.png",
-	"TitleHeader7.png",
-	"TitleHeader8.png"
+		"TitleHeader1.png",
+		"TitleHeader2.png",
+		"TitleHeader3.png",
+		"TitleHeader4.png",
+		"TitleHeader5.png",
+		"TitleHeader6.png",
+		"TitleHeader7.png",
+		"TitleHeader8.png"
 };
 
 static SDL_Surface* LoadImage(const char* Path)
@@ -122,11 +122,11 @@ void Initialize(bool* Continue, bool* Error)
 
 	Screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 32, SDL_HWSURFACE |
 #ifdef SDL_TRIPLEBUF
-		SDL_TRIPLEBUF
+			SDL_TRIPLEBUF
 #else
-		SDL_DOUBLEBUF
+			SDL_DOUBLEBUF
 #endif
-		);
+	);
 
 	if (Screen == NULL)
 	{
@@ -183,30 +183,31 @@ void Initialize(bool* Continue, bool* Error)
 	InitializePlatform();
 
 	// Title screen. (-> title.c)
+	Rumble = true;
 	Shake_Init();
-        device = Shake_Open(0);
+	device = Shake_Open(0);
 
-        Shake_InitEffect(&flap_effect, SHAKE_EFFECT_RUMBLE);
-        flap_effect.u.rumble.strongMagnitude = SHAKE_RUMBLE_STRONG_MAGNITUDE_MAX;
-        flap_effect.u.rumble.weakMagnitude = SHAKE_RUMBLE_STRONG_MAGNITUDE_MAX*0.9;
-        flap_effect.length = 380;
-        flap_effect.delay = 0;
+	Shake_InitEffect(&flap_effect, SHAKE_EFFECT_RUMBLE);
+	flap_effect.u.rumble.strongMagnitude = SHAKE_RUMBLE_STRONG_MAGNITUDE_MAX;
+	flap_effect.u.rumble.weakMagnitude = SHAKE_RUMBLE_STRONG_MAGNITUDE_MAX*0.9;
+	flap_effect.length = 380;
+	flap_effect.delay = 0;
 
-        Shake_InitEffect(&flap_effect1, SHAKE_EFFECT_RUMBLE);
-        flap_effect1.u.rumble.strongMagnitude = SHAKE_RUMBLE_STRONG_MAGNITUDE_MAX;
-        flap_effect1.u.rumble.weakMagnitude = SHAKE_RUMBLE_STRONG_MAGNITUDE_MAX*0.9;
-        flap_effect1.length = 380;
-        flap_effect1.delay = 0;
+	Shake_InitEffect(&flap_effect1, SHAKE_EFFECT_RUMBLE);
+	flap_effect1.u.rumble.strongMagnitude = SHAKE_RUMBLE_STRONG_MAGNITUDE_MAX;
+	flap_effect1.u.rumble.weakMagnitude = SHAKE_RUMBLE_STRONG_MAGNITUDE_MAX*0.9;
+	flap_effect1.length = 380;
+	flap_effect1.delay = 0;
 
-        Shake_InitEffect(&crash_effect, SHAKE_EFFECT_RUMBLE);
-        crash_effect.u.rumble.strongMagnitude = SHAKE_RUMBLE_STRONG_MAGNITUDE_MAX;
-        crash_effect.u.rumble.weakMagnitude = SHAKE_RUMBLE_STRONG_MAGNITUDE_MAX;
-        crash_effect.length = 1000;
-        crash_effect.delay = 0;
+	Shake_InitEffect(&crash_effect, SHAKE_EFFECT_RUMBLE);
+	crash_effect.u.rumble.strongMagnitude = SHAKE_RUMBLE_STRONG_MAGNITUDE_MAX;
+	crash_effect.u.rumble.weakMagnitude = SHAKE_RUMBLE_STRONG_MAGNITUDE_MAX;
+	crash_effect.length = 1000;
+	crash_effect.delay = 0;
 
-        flap_effect_id = Shake_UploadEffect(device, &flap_effect);
-        flap_effect_id1 = Shake_UploadEffect(device, &flap_effect1);
-        crash_effect_id = Shake_UploadEffect(device, &crash_effect);
+	flap_effect_id = Shake_UploadEffect(device, &flap_effect);
+	flap_effect_id1 = Shake_UploadEffect(device, &flap_effect1);
+	crash_effect_id = Shake_UploadEffect(device, &crash_effect);
 
 	if (!InitializeAudio())
 	{
@@ -215,7 +216,6 @@ void Initialize(bool* Continue, bool* Error)
 	}
 	else
 		StartBGM();
-
 
 	ToTitleScreen();
 }
@@ -244,12 +244,12 @@ void Finalize()
 
 	Shake_Stop(device, flap_effect_id);
 	Shake_Stop(device, flap_effect_id1);
-        Shake_Stop(device, crash_effect_id);
+	Shake_Stop(device, crash_effect_id);
 
-        Shake_EraseEffect(device, flap_effect_id);
-        Shake_EraseEffect(device, flap_effect_id1);
-        Shake_EraseEffect(device, crash_effect_id);
-        Shake_Close(device);
-        Shake_Quit();
+	Shake_EraseEffect(device, flap_effect_id);
+	Shake_EraseEffect(device, flap_effect_id1);
+	Shake_EraseEffect(device, crash_effect_id);
+	Shake_Close(device);
+	Shake_Quit();
 	SDL_Quit();
 }
