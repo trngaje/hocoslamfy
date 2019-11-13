@@ -1,8 +1,8 @@
-TARGET      ?= hocoslamfy-od
+TARGET      ?= hocoslamfy
 
 ifeq ($(TARGET), hocoslamfy-od)
-  CC        := mipsel-linux-gcc
-  STRIP     := mipsel-linux-strip
+  CC        := /opt/gcw0-toolchain/usr/bin/mipsel-linux-gcc
+  STRIP     := /opt/gcw0-toolchain/usr/bin/mipsel-linux-strip
   OBJS       = platform/opendingux.o
   DEFS      := -DOPK
 else
@@ -26,7 +26,11 @@ DEFS        +=
 
 CFLAGS       = $(SDL_CFLAGS) -Wall -Wno-unused-variable \
                -O2 -fomit-frame-pointer $(DEFS) $(INCLUDE)
-LDFLAGS     := $(SDL_LIBS) -lm -lSDL_image -lSDL_mixer -lshake
+ifeq ($(TARGET), hocoslamfy-od)              
+	LDFLAGS     := $(SDL_LIBS) -lm -lSDL_image -lSDL_mixer -lshake
+else
+	LDFLAGS     := $(SDL_LIBS) -lm -lSDL_image -lSDL_mixer
+endif
 
 ifneq (, $(findstring MINGW, $(shell uname -s)))
 	CFLAGS+=-DDONT_USE_PWD

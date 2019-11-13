@@ -21,7 +21,9 @@
 #define _INIT_H_
 
 #include <stdbool.h>
+#ifdef OPK
 #include <shake.h>
+#endif
 
 #define SCREEN_WIDTH  320
 #define SCREEN_HEIGHT 240
@@ -32,9 +34,15 @@
 #define DATA_PATH "./data/"
 #endif
 
+#ifdef OPK
 extern Shake_Device *device;
+#endif
+
 extern void ToGame(void);
+#ifdef OPK
 extern Shake_Effect flap_effect, flap_effect1, crash_effect;
+#endif
+
 extern int flap_effect_id, flap_effect_id1, crash_effect_id;
 
 

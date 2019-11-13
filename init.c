@@ -32,10 +32,13 @@
 #include "game.h"
 #include "platform.h"
 #include "title.h"
+#ifdef OPK
 #include <shake.h>
 
 Shake_Device *device;
 Shake_Effect flap_effect, flap_effect1, crash_effect;
+#endif
+
 int flap_effect_id, flap_effect_id1, crash_effect_id;
 
 static const char* BackgroundImageNames[BG_LAYER_COUNT] = {
@@ -184,6 +187,7 @@ void Initialize(bool* Continue, bool* Error)
 
 	// Title screen. (-> title.c)
 	Rumble = true;
+#ifdef OPK
 	Shake_Init();
 	device = Shake_Open(0);
 
@@ -208,7 +212,7 @@ void Initialize(bool* Continue, bool* Error)
 	flap_effect_id = Shake_UploadEffect(device, &flap_effect);
 	flap_effect_id1 = Shake_UploadEffect(device, &flap_effect1);
 	crash_effect_id = Shake_UploadEffect(device, &crash_effect);
-
+#endif
 	if (!InitializeAudio())
 	{
 		*Continue = false;  *Error = true;
@@ -241,7 +245,7 @@ void Finalize()
 	ColumnImage = NULL;
 	SDL_FreeSurface(GameOverFrame);
 	GameOverFrame = NULL;
-
+#ifdef OPK
 	Shake_Stop(device, flap_effect_id);
 	Shake_Stop(device, flap_effect_id1);
 	Shake_Stop(device, crash_effect_id);
@@ -251,5 +255,6 @@ void Finalize()
 	Shake_EraseEffect(device, crash_effect_id);
 	Shake_Close(device);
 	Shake_Quit();
+#endif
 	SDL_Quit();
 }

@@ -37,7 +37,9 @@
 #include "text.h"
 #include "audio.h"
 
+#ifdef OPK
 #include <shake.h>
+#endif
 
 static uint32_t               Score;
 
@@ -99,10 +101,12 @@ static void SetStatus(const enum PlayerStatus NewStatus)
 	PlayerFrameTime = 0;
 	if (NewStatus == COLLIDED && PlayerStatus != COLLIDED)
 	{
+#ifdef OPK
 		Shake_Status ss;
 		if (Rumble==true) {
 			ss = Shake_Play(device, crash_effect_id);
 		}
+#endif
 		PlaySFXCollision();
 	}
 	PlayerStatus = NewStatus;
@@ -247,12 +251,14 @@ void GameDoLogic(bool* Continue, bool* Error, Uint32 Milliseconds)
 				// [PlayerSpeed += SPEED_BOOST;].
 				PlayerSpeed = SPEED_BOOST;
 				Boost = false;
+#ifdef OPK
 				Shake_Stop(device, flap_effect_id);
 				Shake_Stop(device, flap_effect_id1);
 				if (Rumble==true) {
 					Shake_Play(device, flap_effect_id);
 					Shake_Play(device, flap_effect_id1);
 				}
+#endif
 				PlaySFXFly();
 			}
 			// Update the player's position.
@@ -356,44 +362,8 @@ void GameOutputFrame()
 			PassedCount++;
 	}
 
-	// Draw the scores corresponding to each rectangle.
-	// Above, we grabbed the number of passed rectangles, so now we can get
-	// the score represented by the first rectangle shown.
-	uint32_t RectScore = Score - PassedCount;
 	if (SDL_MUSTLOCK(Screen))
 		SDL_LockSurface(Screen);
-	for (i = 0; i < RectangleCount; i += 2)
-	{
-		RectScore++;
-		char RectScoreString[11];
-		sprintf(RectScoreString, "%" PRIu32, RectScore);
-		uint32_t RenderedWidth = GetRenderedWidth(RectScoreString) + 2;
-		int32_t Left = (int32_t) (((Rectangles[i].Left + Rectangles[i].Right) / 2) * SCREEN_WIDTH / FIELD_WIDTH) - RenderedWidth / 2;
-
-		if (Left >= 0 && Left + RenderedWidth < SCREEN_WIDTH)
-		{
-			Uint32 RectScoreColor;
-			if (Rectangles[i].Passed)
-				RectScoreColor = SDL_MapRGB(Screen->format, 64, 255, 64); // green
-			else
-				RectScoreColor = SDL_MapRGB(Screen->format, 255, 255, 255); // white
-			PrintStringOutline32(RectScoreString,
-					RectScoreColor,
-					SDL_MapRGB(Screen->format, 0, 0, 0),
-					Screen->pixels,
-					Screen->pitch,
-					Left,
-					/* Even-numbered rectangle indices are at the top of the field,
-					 * so start the Y below that. */
-					SCREEN_HEIGHT - (int) (Rectangles[i].Bottom * SCREEN_HEIGHT / FIELD_HEIGHT),
-					RenderedWidth,
-					(int) (GAP_HEIGHT * SCREEN_HEIGHT / FIELD_HEIGHT),
-					CENTER,
-					MIDDLE);
-		}
-	}
-	if (SDL_MUSTLOCK(Screen))
-		SDL_UnlockSurface(Screen);
 
 	// Draw the character.
 	SDL_Rect PlayerDestRect = {
@@ -408,6 +378,44 @@ void GameOutputFrame()
 			.w = 32,
 			.h = 32
 	};
+
+	// Draw the scores corresponding to each rectangle.
+	// Above, we grabbed the number of passed rectangles, so now we can get
+	// the score represented by the first rectangle shown.
+	uint32_t RectScore = Score - PassedCount;
+	if (SDL_MUSTLOCK(Screen))
+		SDL_UnlockSurface(Screen);
+	for (i = 0; i < 1; i += 2)
+	{
+		char RectScoreString[11];
+		sprintf(RectScoreString, "%" PRIu32, Score);
+		uint32_t RenderedWidth = GetRenderedWidth(RectScoreString) + 2;
+		int32_t Left = PlayerDestRect.x;
+		RectScore++;
+		if (Left >= 0 && Left + RenderedWidth < SCREEN_WIDTH)
+		{
+			Uint32 RectScoreColor;
+			RectScoreColor = SDL_MapRGB(Screen->format, 255, 255, 255); // white
+
+			if (PlayerDestRect.y<200) {
+				PrintStringOutline32(RectScoreString,
+						RectScoreColor,
+						SDL_MapRGB(Screen->format, 0, 0, 0),
+						Screen->pixels,
+						Screen->pitch,
+						Left,
+						/* Even-numbered rectangle indices are at the top of the field,
+						 * so start the Y below that. */
+						PlayerDestRect.y,
+						RenderedWidth,
+						(int) (GAP_HEIGHT * SCREEN_HEIGHT / FIELD_HEIGHT),
+						CENTER,
+						MIDDLE);
+			}
+		}
+
+	}
+
 #ifdef DRAW_BEE_COLLISION
 	SDL_Rect PlayerPixelsA = {
 			.x = (int) ((PlayerX - (COLLISION_A_WIDTH / 2)) * SCREEN_WIDTH / FIELD_WIDTH),
