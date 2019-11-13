@@ -100,9 +100,9 @@ static void SetStatus(const enum PlayerStatus NewStatus)
 	if (NewStatus == COLLIDED && PlayerStatus != COLLIDED)
 	{
 		Shake_Status ss;
-    if (Rumble==true) {
-		  ss = Shake_Play(device, crash_effect_id);
-    }
+		if (Rumble==true) {
+			ss = Shake_Play(device, crash_effect_id);
+		}
 		PlaySFXCollision();
 	}
 	PlayerStatus = NewStatus;
@@ -117,27 +117,27 @@ static void AnimationControl(Uint32 Milliseconds)
 	Uint32 Remainder = Milliseconds;
 	switch (PlayerStatus)
 	{
-		case ALIVE:
-			Remainder = Remainder % (ANIMATION_TIME * ANIMATION_FRAMES);
-			PlayerFrame = (PlayerFrame + (PlayerFrameTime + Remainder) / ANIMATION_TIME) % ANIMATION_FRAMES;
-			PlayerFrameTime = (PlayerFrameTime + Remainder) % ANIMATION_TIME;
-			break;
-		case DYING:
-			// Get rid of all the times the animation could have been fully
-			// completed since the last frame displayed.
-			Remainder = Remainder % (ANIMATION_TIME * ANIMATION_FRAMES);
-			// If needed, advance the frame by however many steps are now
-			// fully done.
-			PlayerFrame = (PlayerFrame + (PlayerFrameTime + Remainder) / ANIMATION_TIME) % ANIMATION_FRAMES;
-			// Then add milliseconds for the current frame.
-			PlayerFrameTime = (PlayerFrameTime + Remainder) % ANIMATION_TIME;
-			break;
+	case ALIVE:
+		Remainder = Remainder % (ANIMATION_TIME * ANIMATION_FRAMES);
+		PlayerFrame = (PlayerFrame + (PlayerFrameTime + Remainder) / ANIMATION_TIME) % ANIMATION_FRAMES;
+		PlayerFrameTime = (PlayerFrameTime + Remainder) % ANIMATION_TIME;
+		break;
+	case DYING:
+		// Get rid of all the times the animation could have been fully
+		// completed since the last frame displayed.
+		Remainder = Remainder % (ANIMATION_TIME * ANIMATION_FRAMES);
+		// If needed, advance the frame by however many steps are now
+		// fully done.
+		PlayerFrame = (PlayerFrame + (PlayerFrameTime + Remainder) / ANIMATION_TIME) % ANIMATION_FRAMES;
+		// Then add milliseconds for the current frame.
+		PlayerFrameTime = (PlayerFrameTime + Remainder) % ANIMATION_TIME;
+		break;
 
-		case COLLIDED:
-			PlayerFrameTime += Remainder;
-			if (PlayerFrameTime > COLLISION_TIME)
-				SetStatus(DYING);
-			break;
+	case COLLIDED:
+		PlayerFrameTime += Remainder;
+		if (PlayerFrameTime > COLLISION_TIME)
+			SetStatus(DYING);
+		break;
 	}
 
 	// Make the player's character blink for some time every so often.
@@ -192,7 +192,7 @@ void GameDoLogic(bool* Continue, bool* Error, Uint32 Milliseconds)
 				// If a rectangle is past the player, award the player with a
 				// point. But there is a pair of them per column!
 				if (!Rectangles[i].Passed
-				 && Rectangles[i].Right < PlayerX)
+						&& Rectangles[i].Right < PlayerX)
 				{
 					Rectangles[i].Passed = true;
 					if (!PointAwarded)
@@ -249,10 +249,10 @@ void GameDoLogic(bool* Continue, bool* Error, Uint32 Milliseconds)
 				Boost = false;
 				Shake_Stop(device, flap_effect_id);
 				Shake_Stop(device, flap_effect_id1);
-        if (Rumble==true) {
-				  Shake_Play(device, flap_effect_id);
-				  Shake_Play(device, flap_effect_id1);
-        }
+				if (Rumble==true) {
+					Shake_Play(device, flap_effect_id);
+					Shake_Play(device, flap_effect_id1);
+				}
 				PlaySFXFly();
 			}
 			// Update the player's position.
@@ -270,21 +270,21 @@ void GameDoLogic(bool* Continue, bool* Error, Uint32 Milliseconds)
 			for (i = 0; i < RectangleCount; i++)
 			{
 				if ((((PlayerY + (COLLISION_A_HEIGHT / 2) > Rectangles[i].Bottom
-				    && PlayerY + (COLLISION_A_HEIGHT / 2) < Rectangles[i].Top)
-				   || (PlayerY - (COLLISION_A_HEIGHT / 2) > Rectangles[i].Bottom
-				    && PlayerY - (COLLISION_A_HEIGHT / 2) < Rectangles[i].Top))
-				  && ((PlayerX - (COLLISION_A_WIDTH  / 2) > Rectangles[i].Left
-				    && PlayerX - (COLLISION_A_WIDTH  / 2) < Rectangles[i].Right)
-				   || (PlayerX + (COLLISION_A_WIDTH  / 2) > Rectangles[i].Left
-				    && PlayerX + (COLLISION_A_WIDTH  / 2) < Rectangles[i].Right)))
-				 || (((PlayerY + (COLLISION_B_HEIGHT / 2) > Rectangles[i].Bottom
-				    && PlayerY + (COLLISION_B_HEIGHT / 2) < Rectangles[i].Top)
-				   || (PlayerY - (COLLISION_B_HEIGHT / 2) > Rectangles[i].Bottom
-				    && PlayerY - (COLLISION_B_HEIGHT / 2) < Rectangles[i].Top))
-				  && ((PlayerX - (COLLISION_B_WIDTH  / 2) > Rectangles[i].Left
-				    && PlayerX - (COLLISION_B_WIDTH  / 2) < Rectangles[i].Right)
-				   || (PlayerX + (COLLISION_B_WIDTH  / 2) > Rectangles[i].Left
-				    && PlayerX + (COLLISION_B_WIDTH  / 2) < Rectangles[i].Right))))
+						&& PlayerY + (COLLISION_A_HEIGHT / 2) < Rectangles[i].Top)
+						|| (PlayerY - (COLLISION_A_HEIGHT / 2) > Rectangles[i].Bottom
+								&& PlayerY - (COLLISION_A_HEIGHT / 2) < Rectangles[i].Top))
+						&& ((PlayerX - (COLLISION_A_WIDTH  / 2) > Rectangles[i].Left
+								&& PlayerX - (COLLISION_A_WIDTH  / 2) < Rectangles[i].Right)
+								|| (PlayerX + (COLLISION_A_WIDTH  / 2) > Rectangles[i].Left
+										&& PlayerX + (COLLISION_A_WIDTH  / 2) < Rectangles[i].Right)))
+						|| (((PlayerY + (COLLISION_B_HEIGHT / 2) > Rectangles[i].Bottom
+								&& PlayerY + (COLLISION_B_HEIGHT / 2) < Rectangles[i].Top)
+								|| (PlayerY - (COLLISION_B_HEIGHT / 2) > Rectangles[i].Bottom
+										&& PlayerY - (COLLISION_B_HEIGHT / 2) < Rectangles[i].Top))
+								&& ((PlayerX - (COLLISION_B_WIDTH  / 2) > Rectangles[i].Left
+										&& PlayerX - (COLLISION_B_WIDTH  / 2) < Rectangles[i].Right)
+										|| (PlayerX + (COLLISION_B_WIDTH  / 2) > Rectangles[i].Left
+												&& PlayerX + (COLLISION_B_WIDTH  / 2) < Rectangles[i].Right))))
 				{
 					SetStatus(COLLIDED);
 					GameOverReason = RECTANGLE_COLLISION;
@@ -309,9 +309,9 @@ void GameDoLogic(bool* Continue, bool* Error, Uint32 Milliseconds)
 			if (PlayerY < 0.0f)
 			{
 				uint32_t HighScore = GetHighScore();
-				
+
 				ToScore(Score, GameOverReason, HighScore);
-				
+
 				if (Score > HighScore)
 					SaveHighScore(Score);
 				return;
@@ -332,10 +332,10 @@ void GameOutputFrame()
 	for (i = 0; i < RectangleCount; i++)
 	{
 		SDL_Rect ColumnDestRect = {
-			.x = (int) (Rectangles[i].Left * SCREEN_WIDTH / FIELD_WIDTH) - 20,
-			.y = SCREEN_HEIGHT - (int) (Rectangles[i].Top * SCREEN_HEIGHT / FIELD_HEIGHT),
-			.w = (int) ((Rectangles[i].Right - Rectangles[i].Left) * SCREEN_WIDTH / FIELD_WIDTH) + 40,
-			.h = (int) ((Rectangles[i].Top - Rectangles[i].Bottom) * SCREEN_HEIGHT / FIELD_HEIGHT)
+				.x = (int) (Rectangles[i].Left * SCREEN_WIDTH / FIELD_WIDTH) - 20,
+				.y = SCREEN_HEIGHT - (int) (Rectangles[i].Top * SCREEN_HEIGHT / FIELD_HEIGHT),
+				.w = (int) ((Rectangles[i].Right - Rectangles[i].Left) * SCREEN_WIDTH / FIELD_WIDTH) + 40,
+				.h = (int) ((Rectangles[i].Top - Rectangles[i].Bottom) * SCREEN_HEIGHT / FIELD_HEIGHT)
 		};
 		SDL_Rect ColumnSourceRect = { .x = 0, .y = 0, .w = ColumnDestRect.w, .h = ColumnDestRect.h };
 		// Odd-numbered rectangle indices are at the bottom of the field,
@@ -378,18 +378,18 @@ void GameOutputFrame()
 			else
 				RectScoreColor = SDL_MapRGB(Screen->format, 255, 255, 255); // white
 			PrintStringOutline32(RectScoreString,
-				RectScoreColor,
-				SDL_MapRGB(Screen->format, 0, 0, 0),
-				Screen->pixels,
-				Screen->pitch,
-				Left,
-				/* Even-numbered rectangle indices are at the top of the field,
-				 * so start the Y below that. */
-				SCREEN_HEIGHT - (int) (Rectangles[i].Bottom * SCREEN_HEIGHT / FIELD_HEIGHT),
-				RenderedWidth,
-				(int) (GAP_HEIGHT * SCREEN_HEIGHT / FIELD_HEIGHT),
-				CENTER,
-				MIDDLE);
+					RectScoreColor,
+					SDL_MapRGB(Screen->format, 0, 0, 0),
+					Screen->pixels,
+					Screen->pitch,
+					Left,
+					/* Even-numbered rectangle indices are at the top of the field,
+					 * so start the Y below that. */
+					SCREEN_HEIGHT - (int) (Rectangles[i].Bottom * SCREEN_HEIGHT / FIELD_HEIGHT),
+					RenderedWidth,
+					(int) (GAP_HEIGHT * SCREEN_HEIGHT / FIELD_HEIGHT),
+					CENTER,
+					MIDDLE);
 		}
 	}
 	if (SDL_MUSTLOCK(Screen))
@@ -397,62 +397,62 @@ void GameOutputFrame()
 
 	// Draw the character.
 	SDL_Rect PlayerDestRect = {
-		.x = (int) (PlayerX * SCREEN_WIDTH / FIELD_WIDTH) - (PLAYER_FRAME_SIZE / 2),
-		.y = (int) (SCREEN_HEIGHT - (PlayerY * SCREEN_HEIGHT / FIELD_HEIGHT)) - (PLAYER_FRAME_SIZE / 2),
-		.w = (int) PLAYER_FRAME_SIZE,
-		.h = (int) PLAYER_FRAME_SIZE
+			.x = (int) (PlayerX * SCREEN_WIDTH / FIELD_WIDTH) - (PLAYER_FRAME_SIZE / 2),
+			.y = (int) (SCREEN_HEIGHT - (PlayerY * SCREEN_HEIGHT / FIELD_HEIGHT)) - (PLAYER_FRAME_SIZE / 2),
+			.w = (int) PLAYER_FRAME_SIZE,
+			.h = (int) PLAYER_FRAME_SIZE
 	};
 	SDL_Rect PlayerSourceRect = {
-		.x = 0,
-		.y = 0,
-		.w = 32,
-		.h = 32
+			.x = 0,
+			.y = 0,
+			.w = 32,
+			.h = 32
 	};
 #ifdef DRAW_BEE_COLLISION
 	SDL_Rect PlayerPixelsA = {
-		.x = (int) ((PlayerX - (COLLISION_A_WIDTH / 2)) * SCREEN_WIDTH / FIELD_WIDTH),
-		.y = (int) (SCREEN_HEIGHT - ((PlayerY + (COLLISION_A_HEIGHT / 2)) * SCREEN_HEIGHT / FIELD_HEIGHT)),
-		.w = (int) (COLLISION_A_WIDTH * SCREEN_HEIGHT / FIELD_HEIGHT),
-		.h = (int) (COLLISION_A_HEIGHT * SCREEN_HEIGHT / FIELD_HEIGHT)
+			.x = (int) ((PlayerX - (COLLISION_A_WIDTH / 2)) * SCREEN_WIDTH / FIELD_WIDTH),
+			.y = (int) (SCREEN_HEIGHT - ((PlayerY + (COLLISION_A_HEIGHT / 2)) * SCREEN_HEIGHT / FIELD_HEIGHT)),
+			.w = (int) (COLLISION_A_WIDTH * SCREEN_HEIGHT / FIELD_HEIGHT),
+			.h = (int) (COLLISION_A_HEIGHT * SCREEN_HEIGHT / FIELD_HEIGHT)
 	};
 	SDL_Rect PlayerPixelsB = {
-		.x = (int) ((PlayerX - (COLLISION_B_WIDTH / 2)) * SCREEN_WIDTH / FIELD_WIDTH),
-		.y = (int) (SCREEN_HEIGHT - ((PlayerY + (COLLISION_B_HEIGHT / 2)) * SCREEN_HEIGHT / FIELD_HEIGHT)),
-		.w = (int) (COLLISION_B_WIDTH * SCREEN_HEIGHT / FIELD_HEIGHT),
-		.h = (int) (COLLISION_B_HEIGHT * SCREEN_HEIGHT / FIELD_HEIGHT)
+			.x = (int) ((PlayerX - (COLLISION_B_WIDTH / 2)) * SCREEN_WIDTH / FIELD_WIDTH),
+			.y = (int) (SCREEN_HEIGHT - ((PlayerY + (COLLISION_B_HEIGHT / 2)) * SCREEN_HEIGHT / FIELD_HEIGHT)),
+			.w = (int) (COLLISION_B_WIDTH * SCREEN_HEIGHT / FIELD_HEIGHT),
+			.h = (int) (COLLISION_B_HEIGHT * SCREEN_HEIGHT / FIELD_HEIGHT)
 	};
 #endif
 	switch (PlayerStatus)
 	{
-		case ALIVE:
-			if (PlayerSpeed > -2.0f) {
-				PlayerSourceRect.x = 32 * PlayerFrame;
-			} else {
-				PlayerSourceRect.x = 128 + 32 * PlayerFrame;
-			}
-			if (PlayerBlinking)
-				PlayerSourceRect.x += 64;
-			SDL_BlitSurface(CharacterFrames, &PlayerSourceRect, Screen, &PlayerDestRect);
+	case ALIVE:
+		if (PlayerSpeed > -2.0f) {
+			PlayerSourceRect.x = 32 * PlayerFrame;
+		} else {
+			PlayerSourceRect.x = 128 + 32 * PlayerFrame;
+		}
+		if (PlayerBlinking)
+			PlayerSourceRect.x += 64;
+		SDL_BlitSurface(CharacterFrames, &PlayerSourceRect, Screen, &PlayerDestRect);
 #ifdef DRAW_BEE_COLLISION
-			SDL_FillRect(Screen, &PlayerPixelsA, SDL_MapRGB(Screen->format, 255, 255, 255));
-			SDL_FillRect(Screen, &PlayerPixelsB, SDL_MapRGB(Screen->format, 255, 255, 255));
+		SDL_FillRect(Screen, &PlayerPixelsA, SDL_MapRGB(Screen->format, 255, 255, 255));
+		SDL_FillRect(Screen, &PlayerPixelsB, SDL_MapRGB(Screen->format, 255, 255, 255));
 #endif
-			break;
+		break;
 
-		case COLLIDED:
-			PlayerSourceRect.w = 48;
-			PlayerSourceRect.h = 48;
-			PlayerDestRect.x -= 8;
-			PlayerDestRect.y -= 8;
-			PlayerDestRect.w += 16;
-			PlayerDestRect.h += 16;
-			SDL_BlitSurface(CollisionImage, &PlayerSourceRect, Screen, &PlayerDestRect);
-			break;
+	case COLLIDED:
+		PlayerSourceRect.w = 48;
+		PlayerSourceRect.h = 48;
+		PlayerDestRect.x -= 8;
+		PlayerDestRect.y -= 8;
+		PlayerDestRect.w += 16;
+		PlayerDestRect.h += 16;
+		SDL_BlitSurface(CollisionImage, &PlayerSourceRect, Screen, &PlayerDestRect);
+		break;
 
-		case DYING:
-			PlayerSourceRect.x = 256 + 32 * PlayerFrame;
-			SDL_BlitSurface(CharacterFrames, &PlayerSourceRect, Screen, &PlayerDestRect);
-			break;
+	case DYING:
+		PlayerSourceRect.x = 256 + 32 * PlayerFrame;
+		SDL_BlitSurface(CharacterFrames, &PlayerSourceRect, Screen, &PlayerDestRect);
+		break;
 	}
 
 	SDL_Flip(Screen);
