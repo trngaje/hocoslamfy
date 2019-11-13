@@ -1,8 +1,8 @@
-TARGET      ?= hocoslamfy
+TARGET      ?= hocoslamfy-od
 
 ifeq ($(TARGET), hocoslamfy-od)
-  CC        := /opt/gcw0-toolchain/usr/bin/mipsel-linux-gcc
-  STRIP     := /opt/gcw0-toolchain/usr/bin/mipsel-linux-strip
+  CC        := mipsel-linux-gcc
+  STRIP     := mipsel-linux-strip
   OBJS       = platform/opendingux.o
   DEFS      := -DOPK
 else
