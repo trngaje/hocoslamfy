@@ -4,6 +4,9 @@ mkdir -p ipkg/home/retrofw/games/hocoslamfy
 mkdir -p ipkg/home/retrofw/apps/gmenu2x/sections/games
 cp data/* ipkg/home/retrofw/games/hocoslamfy/
 cp hocoslamfy-od ipkg/home/retrofw/games/hocoslamfy/hocoslamfy
+cp COPYRIGHT ipkg/home/retrofw/games/hocoslamfy/
+mv ipkg/home/retrofw/games/hocoslamfy/manual-en.txt ipkg/home/retrofw/games/hocoslamfy/hocoslamfy.man.txt
+rm ipkg/home/retrofw/games/hocoslamfy/default.gcw0.desktop
 
 cd ipkg
 
