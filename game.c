@@ -37,7 +37,9 @@
 #include "text.h"
 #include "audio.h"
 
+#ifndef NO_SHAKE
 #include <shake.h>
+#endif
 
 static uint32_t               Score;
 
@@ -99,10 +101,12 @@ static void SetStatus(const enum PlayerStatus NewStatus)
 	PlayerFrameTime = 0;
 	if (NewStatus == COLLIDED && PlayerStatus != COLLIDED)
 	{
+#ifndef NO_SHAKE		
 		Shake_Status ss;
     if (Rumble) {
 		  ss = Shake_Play(device, crash_effect_id);
     }
+#endif
 		PlaySFXCollision();
 	}
 	PlayerStatus = NewStatus;
@@ -247,12 +251,14 @@ void GameDoLogic(bool* Continue, bool* Error, Uint32 Milliseconds)
 				// [PlayerSpeed += SPEED_BOOST;].
 				PlayerSpeed = SPEED_BOOST;
 				Boost = false;
+#ifndef NO_SHAKE
 				Shake_Stop(device, flap_effect_id);
 				Shake_Stop(device, flap_effect_id1);
         if (Rumble) {
 				  Shake_Play(device, flap_effect_id);
 				  Shake_Play(device, flap_effect_id1);
         }
+#endif
 				PlaySFXFly();
 			}
 			// Update the player's position.

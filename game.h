@@ -17,7 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+#ifndef NO_SHAKE
 #include <shake.h>
+#endif
 
 #ifndef _GAME_H_
 #define _GAME_H_
