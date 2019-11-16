@@ -25,7 +25,7 @@ INCLUDE     := -I.
 DEFS        +=
 
 CFLAGS       = $(SDL_CFLAGS) -Wall -Wno-unused-variable \
-               -O2 -fomit-frame-pointer $(DEFS) $(INCLUDE) -DNO_SHAKE
+               -O2 -fomit-frame-pointer $(DEFS) $(INCLUDE) -DNO_SHAKE -DUSE_HOME
 LDFLAGS     := $(SDL_LIBS) -lm -lSDL_image -lSDL_mixer
 
 ifneq (, $(findstring MINGW, $(shell uname -s)))
