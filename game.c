@@ -362,12 +362,15 @@ void GameOutputFrame()
 			PassedCount++;
 	}
 
+#ifndef FOLLOW_SCORE
 	// Draw the scores corresponding to each rectangle.
 	// Above, we grabbed the number of passed rectangles, so now we can get
 	// the score represented by the first rectangle shown.
 	uint32_t RectScore = Score - PassedCount;
+#endif	
 	if (SDL_MUSTLOCK(Screen))
 		SDL_LockSurface(Screen);
+#ifndef FOLLOW_SCORE	
 	for (i = 0; i < RectangleCount; i += 2)
 	{
 		RectScore++;
@@ -404,6 +407,7 @@ void GameOutputFrame()
 	}
 	if (SDL_MUSTLOCK(Screen))
 		SDL_UnlockSurface(Screen);
+#endif
 
 	// Draw the character.
 	SDL_Rect PlayerDestRect = {
@@ -418,6 +422,49 @@ void GameOutputFrame()
 		.w = 32,
 		.h = 32
 	};
+	
+#ifdef FOLLOW_SCORE
+	// Draw the scores corresponding to each rectangle.
+	// Above, we grabbed the number of passed rectangles, so now we can get
+	// the score represented by the first rectangle shown.
+	uint32_t RectScore = Score - PassedCount;
+	if (SDL_MUSTLOCK(Screen))
+		SDL_UnlockSurface(Screen);
+	for (i = 0; i < 1; i += 2)
+	{
+		char RectScoreString[11];
+		sprintf(RectScoreString, "%" PRIu32, Score);
+		uint32_t RenderedWidth = GetRenderedWidth(RectScoreString) + 2;
+		int32_t Left = PlayerDestRect.x;
+		RectScore++;
+		if (Left >= 0 && Left + RenderedWidth < SCREEN_WIDTH)
+		{
+			Uint32 RectScoreColor;
+			RectScoreColor = SDL_MapRGB(Screen->format, 255, 255, 255); // white
+
+			if (PlayerDestRect.y<200) {
+#ifdef USE_16BPP			
+				PrintStringOutline16(RectScoreString,
+#else
+				PrintStringOutline32(RectScoreString,	
+#endif
+					RectScoreColor,
+					SDL_MapRGB(Screen->format, 0, 0, 0),
+					Screen->pixels,
+					Screen->pitch,
+					Left,
+					/* Even-numbered rectangle indices are at the top of the field,
+					 * so start the Y below that. */
+					PlayerDestRect.y,
+					RenderedWidth,
+					(int) (GAP_HEIGHT * SCREEN_HEIGHT / FIELD_HEIGHT),
+					CENTER,
+					MIDDLE);
+			}
+		}
+	}
+#endif	
+	
 #ifdef DRAW_BEE_COLLISION
 	SDL_Rect PlayerPixelsA = {
 		.x = (int) ((PlayerX - (COLLISION_A_WIDTH / 2)) * SCREEN_WIDTH / FIELD_WIDTH),
