@@ -53,6 +53,24 @@ static const uint32_t HeaderFrameAnimation[TITLE_ANIMATION_FRAMES] = {
 	4, 5, 4, 5, 4, 5, 4, 5, 4, 5, 4, 5,
 };
 
+void setWelcomeMessage()
+{
+	if (WelcomeMessage == NULL)
+	{
+		int Length = 2, NewLength;
+		WelcomeMessage = malloc(Length);
+#ifdef NO_SHAKE		
+		while ((NewLength = snprintf(WelcomeMessage, Length, "Press %s to play\nor %s to exit\n\nIn-game:\n%s to rise\n%s to pause\n%s to exit", GetEnterGamePrompt(), GetExitGamePrompt(), GetBoostPrompt(), GetPausePrompt(), GetExitGamePrompt())) >= Length)	
+#else		
+		while ((NewLength = snprintf(WelcomeMessage, Length, "Press %s to play\nor %s to exit\n\nIn-game:\n%s to rise\n%s to pause\n%s to %s rumble\n%s to exit", GetEnterGamePrompt(), GetExitGamePrompt(), GetBoostPrompt(), GetPausePrompt(), GetRumblePrompt(), Rumble==true?"disable":"enable", GetExitGamePrompt())) >= Length)
+#endif
+		{
+			Length = NewLength + 1;
+			WelcomeMessage = realloc(WelcomeMessage, Length);
+		}
+	}
+}
+
 void TitleScreenGatherInput(bool* Continue)
 {
 	SDL_Event ev;
@@ -82,6 +100,17 @@ void TitleScreenGatherInput(bool* Continue)
 			}
 			return;
 		}
+		else if (IsRumbleEvent(&ev))
+		{
+			Rumble = !Rumble;
+			free(WelcomeMessage);
+			WelcomeMessage=NULL;
+			setWelcomeMessage();
+		}		
+		else if (IsScoreToggleEvent(&ev))
+		{
+			FollowBee = !FollowBee;
+		}		
 	}
 }
 
@@ -148,21 +177,7 @@ void TitleScreenOutputFrame()
 
 void ToTitleScreen(void)
 {
-	if (WelcomeMessage == NULL)
-	{
-		int Length = 2, NewLength;
-		WelcomeMessage = malloc(Length);
-#ifdef NO_SHAKE		
-		while ((NewLength = snprintf(WelcomeMessage, Length, "Press %s to play\nor %s to exit\n\nIn-game:\n%s to rise\n%s to pause\n%s to exit", GetEnterGamePrompt(), GetExitGamePrompt(), GetBoostPrompt(), GetPausePrompt(), GetExitGamePrompt())) >= Length)	
-#else
-		while ((NewLength = snprintf(WelcomeMessage, Length, "Press %s to play\nor %s to exit\n\nIn-game:\n%s to rise\n%s to pause\n%s to disable rumble\n%s to exit", GetEnterGamePrompt(), GetExitGamePrompt(), GetBoostPrompt(), GetPausePrompt(), GetRumblePrompt(), GetExitGamePrompt())) >= Length)
-#endif
-		{
-			Length = NewLength + 1;
-			WelcomeMessage = realloc(WelcomeMessage, Length);
-		}
-	}
-
+	setWelcomeMessage();
 	GatherInput = TitleScreenGatherInput;
 	DoLogic     = TitleScreenDoLogic;
 	OutputFrame = TitleScreenOutputFrame;

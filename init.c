@@ -189,6 +189,7 @@ void Initialize(bool* Continue, bool* Error)
 
 #ifndef NO_SHAKE
 	// Title screen. (-> title.c)
+	Rumble = true;
 	Shake_Init();
         device = Shake_Open(0);
 
@@ -214,6 +215,8 @@ void Initialize(bool* Continue, bool* Error)
         flap_effect_id1 = Shake_UploadEffect(device, &flap_effect1);
         crash_effect_id = Shake_UploadEffect(device, &crash_effect);
 #endif
+
+	FollowBee = false;
 
 	if (!InitializeAudio())
 	{

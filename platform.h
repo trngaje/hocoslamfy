@@ -55,3 +55,6 @@ const char* GetPausePrompt(void);
 
 bool IsRumbleEvent(const SDL_Event* event);
 const char* GetRumblePrompt(void);
+
+bool IsScoreToggleEvent(const SDL_Event* event);
+const char* GetScoreTogglePrompt(void);

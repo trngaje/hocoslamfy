@@ -45,7 +45,6 @@ static uint32_t               Score;
 
 static bool                   Boost;
 static bool                   Pause;
-static bool                   Rumble;
 static enum PlayerStatus      PlayerStatus;
 
 // Where the player is. (Center, meters.)
@@ -88,6 +87,8 @@ void GameGatherInput(bool* Continue)
 			Pause = !Pause;
 		else if (IsRumbleEvent(&ev))
 			Rumble = !Rumble;
+		else if (IsScoreToggleEvent(&ev))
+			FollowBee = !FollowBee;
 		else if (IsExitGameEvent(&ev))
 		{
 			*Continue = false;
@@ -362,15 +363,13 @@ void GameOutputFrame()
 			PassedCount++;
 	}
 
-#ifndef FOLLOW_SCORE
+if (!FollowBee) {
 	// Draw the scores corresponding to each rectangle.
 	// Above, we grabbed the number of passed rectangles, so now we can get
 	// the score represented by the first rectangle shown.
 	uint32_t RectScore = Score - PassedCount;
-#endif	
 	if (SDL_MUSTLOCK(Screen))
 		SDL_LockSurface(Screen);
-#ifndef FOLLOW_SCORE	
 	for (i = 0; i < RectangleCount; i += 2)
 	{
 		RectScore++;
@@ -405,9 +404,9 @@ void GameOutputFrame()
 				MIDDLE);
 		}
 	}
+}
 	if (SDL_MUSTLOCK(Screen))
 		SDL_UnlockSurface(Screen);
-#endif
 
 	// Draw the character.
 	SDL_Rect PlayerDestRect = {
@@ -423,7 +422,7 @@ void GameOutputFrame()
 		.h = 32
 	};
 	
-#ifdef FOLLOW_SCORE
+if (FollowBee) {
 	// Draw the scores corresponding to each rectangle.
 	// Above, we grabbed the number of passed rectangles, so now we can get
 	// the score represented by the first rectangle shown.
@@ -463,7 +462,7 @@ void GameOutputFrame()
 			}
 		}
 	}
-#endif	
+}
 	
 #ifdef DRAW_BEE_COLLISION
 	SDL_Rect PlayerPixelsA = {
@@ -521,7 +520,6 @@ void ToGame(void)
 	Score = 0;
 	Boost = false;
 	Pause = false;
-	Rumble = true;
 	SetStatus(ALIVE);
 	PlayerX = FIELD_WIDTH / 4;
 	PlayerY = FIELD_HEIGHT / 2;
