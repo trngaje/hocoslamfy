@@ -99,6 +99,17 @@ const char* GetRumblePrompt(void)
 	return "Tab";
 }
 
+bool IsScoreToggleEvent(const SDL_Event* event)
+{
+	return event->type == SDL_KEYDOWN
+	    && event->key.keysym.sym == SDLK_BACKSPACE;
+}
+
+const char* GetScoreTogglePrompt(void)
+{
+	return "Backspace";
+}
+
 const char* GetPausePrompt(void)
 {
 	return "P";

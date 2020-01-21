@@ -37,13 +37,14 @@
 #include "text.h"
 #include "audio.h"
 
+#ifndef NO_SHAKE
 #include <shake.h>
+#endif
 
 static uint32_t               Score;
 
 static bool                   Boost;
 static bool                   Pause;
-static bool                   Rumble;
 static enum PlayerStatus      PlayerStatus;
 
 // Where the player is. (Center, meters.)
@@ -86,6 +87,8 @@ void GameGatherInput(bool* Continue)
 			Pause = !Pause;
 		else if (IsRumbleEvent(&ev))
 			Rumble = !Rumble;
+		else if (IsScoreToggleEvent(&ev))
+			FollowBee = !FollowBee;
 		else if (IsExitGameEvent(&ev))
 		{
 			*Continue = false;
@@ -99,10 +102,12 @@ static void SetStatus(const enum PlayerStatus NewStatus)
 	PlayerFrameTime = 0;
 	if (NewStatus == COLLIDED && PlayerStatus != COLLIDED)
 	{
+#ifndef NO_SHAKE		
 		Shake_Status ss;
     if (Rumble) {
 		  ss = Shake_Play(device, crash_effect_id);
     }
+#endif
 		PlaySFXCollision();
 	}
 	PlayerStatus = NewStatus;
@@ -247,12 +252,14 @@ void GameDoLogic(bool* Continue, bool* Error, Uint32 Milliseconds)
 				// [PlayerSpeed += SPEED_BOOST;].
 				PlayerSpeed = SPEED_BOOST;
 				Boost = false;
+#ifndef NO_SHAKE
 				Shake_Stop(device, flap_effect_id);
 				Shake_Stop(device, flap_effect_id1);
         if (Rumble) {
 				  Shake_Play(device, flap_effect_id);
 				  Shake_Play(device, flap_effect_id1);
         }
+#endif
 				PlaySFXFly();
 			}
 			// Update the player's position.
@@ -356,6 +363,7 @@ void GameOutputFrame()
 			PassedCount++;
 	}
 
+if (!FollowBee) {
 	// Draw the scores corresponding to each rectangle.
 	// Above, we grabbed the number of passed rectangles, so now we can get
 	// the score represented by the first rectangle shown.
@@ -377,7 +385,11 @@ void GameOutputFrame()
 				RectScoreColor = SDL_MapRGB(Screen->format, 64, 255, 64); // green
 			else
 				RectScoreColor = SDL_MapRGB(Screen->format, 255, 255, 255); // white
-			PrintStringOutline32(RectScoreString,
+#ifdef USE_16BPP			
+			PrintStringOutline16(RectScoreString,
+#else
+			PrintStringOutline32(RectScoreString,	
+#endif
 				RectScoreColor,
 				SDL_MapRGB(Screen->format, 0, 0, 0),
 				Screen->pixels,
@@ -392,6 +404,7 @@ void GameOutputFrame()
 				MIDDLE);
 		}
 	}
+}
 	if (SDL_MUSTLOCK(Screen))
 		SDL_UnlockSurface(Screen);
 
@@ -408,6 +421,49 @@ void GameOutputFrame()
 		.w = 32,
 		.h = 32
 	};
+	
+if (FollowBee) {
+	// Draw the scores corresponding to each rectangle.
+	// Above, we grabbed the number of passed rectangles, so now we can get
+	// the score represented by the first rectangle shown.
+	uint32_t RectScore = Score - PassedCount;
+	if (SDL_MUSTLOCK(Screen))
+		SDL_UnlockSurface(Screen);
+	for (i = 0; i < 1; i += 2)
+	{
+		char RectScoreString[11];
+		sprintf(RectScoreString, "%" PRIu32, Score);
+		uint32_t RenderedWidth = GetRenderedWidth(RectScoreString) + 2;
+		int32_t Left = PlayerDestRect.x;
+		RectScore++;
+		if (Left >= 0 && Left + RenderedWidth < SCREEN_WIDTH)
+		{
+			Uint32 RectScoreColor;
+			RectScoreColor = SDL_MapRGB(Screen->format, 255, 255, 255); // white
+
+			if (PlayerDestRect.y<200) {
+#ifdef USE_16BPP			
+				PrintStringOutline16(RectScoreString,
+#else
+				PrintStringOutline32(RectScoreString,	
+#endif
+					RectScoreColor,
+					SDL_MapRGB(Screen->format, 0, 0, 0),
+					Screen->pixels,
+					Screen->pitch,
+					Left,
+					/* Even-numbered rectangle indices are at the top of the field,
+					 * so start the Y below that. */
+					PlayerDestRect.y,
+					RenderedWidth,
+					(int) (GAP_HEIGHT * SCREEN_HEIGHT / FIELD_HEIGHT),
+					CENTER,
+					MIDDLE);
+			}
+		}
+	}
+}
+	
 #ifdef DRAW_BEE_COLLISION
 	SDL_Rect PlayerPixelsA = {
 		.x = (int) ((PlayerX - (COLLISION_A_WIDTH / 2)) * SCREEN_WIDTH / FIELD_WIDTH),
@@ -464,7 +520,6 @@ void ToGame(void)
 	Score = 0;
 	Boost = false;
 	Pause = false;
-	Rumble = true;
 	SetStatus(ALIVE);
 	PlayerX = FIELD_WIDTH / 4;
 	PlayerY = FIELD_HEIGHT / 2;

@@ -32,11 +32,13 @@
 #include "game.h"
 #include "platform.h"
 #include "title.h"
+#ifndef NO_SHAKE
 #include <shake.h>
 
 Shake_Device *device;
 Shake_Effect flap_effect, flap_effect1, crash_effect;
 int flap_effect_id, flap_effect_id1, crash_effect_id;
+#endif
 
 static const char* BackgroundImageNames[BG_LAYER_COUNT] = {
 	"Sky.png",
@@ -119,8 +121,11 @@ void Initialize(bool* Continue, bool* Error)
 		return;
 	SDL_WM_SetIcon(WindowIcon, NULL);
 	SDL_WM_SetCaption("hocoslamfy", "hocoslamfy");
-
+#ifdef USE_16BPP
+	Screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 16, SDL_HWSURFACE |
+#else
 	Screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 32, SDL_HWSURFACE |
+#endif
 #ifdef SDL_TRIPLEBUF
 		SDL_TRIPLEBUF
 #else
@@ -182,7 +187,9 @@ void Initialize(bool* Continue, bool* Error)
 
 	InitializePlatform();
 
+#ifndef NO_SHAKE
 	// Title screen. (-> title.c)
+	Rumble = true;
 	Shake_Init();
         device = Shake_Open(0);
 
@@ -207,6 +214,9 @@ void Initialize(bool* Continue, bool* Error)
         flap_effect_id = Shake_UploadEffect(device, &flap_effect);
         flap_effect_id1 = Shake_UploadEffect(device, &flap_effect1);
         crash_effect_id = Shake_UploadEffect(device, &crash_effect);
+#endif
+
+	FollowBee = false;
 
 	if (!InitializeAudio())
 	{
@@ -242,6 +252,7 @@ void Finalize()
 	SDL_FreeSurface(GameOverFrame);
 	GameOverFrame = NULL;
 
+#ifndef NO_SHAKE
 	Shake_Stop(device, flap_effect_id);
 	Shake_Stop(device, flap_effect_id1);
         Shake_Stop(device, crash_effect_id);
@@ -251,5 +262,6 @@ void Finalize()
         Shake_EraseEffect(device, crash_effect_id);
         Shake_Close(device);
         Shake_Quit();
+#endif
 	SDL_Quit();
 }

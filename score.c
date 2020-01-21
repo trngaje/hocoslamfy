@@ -103,7 +103,11 @@ void ScoreOutputFrame()
 
 	if (SDL_MUSTLOCK(Screen))
 		SDL_LockSurface(Screen);
-	PrintStringOutline32(ScoreMessage,
+#ifdef USE_16BPP		
+	PrintStringOutline16(ScoreMessage,
+#else
+	PrintStringOutline32(ScoreMessage,	
+#endif
 		SDL_MapRGB(Screen->format, 255, 255, 255),
 		SDL_MapRGB(Screen->format, 0, 0, 0),
 		Screen->pixels,
@@ -174,14 +178,23 @@ void SaveHighScore(uint32_t Score)
 {
 	char path[256];
 #ifndef DONT_USE_PWD
+#if USE_HOME	
+	char *home = getenv("HOME");
+	
+	snprintf(path, 256, "%s/%s", home, SavePath);
+	MkDir(path);	
+	
+	snprintf(path, 256, "%s/%s/%s", home, SavePath, HighScoreFilePath);	
+#else
 	struct passwd *pw = getpwuid(getuid());
 	
 	snprintf(path, 256, "%s/%s", pw->pw_dir, SavePath);
 	MkDir(path);
 	
 	snprintf(path, 256, "%s/%s/%s", pw->pw_dir, SavePath, HighScoreFilePath);
+#endif	
 #else
-	snprintf(path, 256, "./highscore");
+	snprintf(path, 256, "%s", HighScoreFilePath);
 #endif
 	FILE *fp = fopen(path, "w");
 
@@ -215,10 +228,15 @@ uint32_t GetHighScore()
 {
 	char path[256];
 #ifndef DONT_USE_PWD
+#if USE_HOME	
+	char *home = getenv("HOME");
+	snprintf(path, 256, "%s/%s/%s", home, SavePath, HighScoreFilePath);	
+#else
 	struct passwd *pw = getpwuid(getuid());
 	snprintf(path, 256, "%s/%s/%s", pw->pw_dir, SavePath, HighScoreFilePath);
+#endif	
 #else
-	snprintf(path, 256, "./highscore");
+	snprintf(path, 256, "%s", HighScoreFilePath);
 #endif
 
 	FILE *fp = fopen(path, "r");
