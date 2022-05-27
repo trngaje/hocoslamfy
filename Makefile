@@ -1,11 +1,19 @@
 TARGET      ?= hocoslamfy-od
 
-ifeq ($(TARGET), hocoslamfy-od)
+ifeq ($(platform), od)
+  TARGET    := hocoslamfy-od
   CC        := mipsel-linux-gcc
   STRIP     := mipsel-linux-strip
   OBJS       = platform/opendingux.o
   DEFS      := -DOPK
+else ifeq ($(platform), miyoomini)
+  TARGET    := hocoslamfy
+  CC        := arm-linux-gnueabihf-gcc
+  STRIP     := arm-linux-gnueabihf-strip
+  OBJS       = platform/opendingux.o
+  DEFS      := -DNO_SHAKE -DUSE_HOME -DMIYOOMINI 
 else
+  TARGET    := hocoslamfy
   CC        := gcc
   STRIP     := strip
   OBJS       = platform/general.o
@@ -26,8 +34,8 @@ DEFS        +=
 
 CFLAGS       = $(SDL_CFLAGS) -Wall -Wno-unused-variable \
                -O2 -fomit-frame-pointer $(DEFS) $(INCLUDE)
-LDFLAGS     := $(SDL_LIBS) -lm -lSDL_image -lSDL_mixer  -lshake
-
+LDFLAGS     := $(SDL_LIBS) -lm -lSDL_image -lSDL_mixer 
+#-lshake
 ifneq (, $(findstring MINGW, $(shell uname -s)))
 	CFLAGS+=-DDONT_USE_PWD
 endif

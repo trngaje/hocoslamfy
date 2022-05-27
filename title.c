@@ -59,10 +59,14 @@ void setWelcomeMessage()
 	{
 		int Length = 2, NewLength;
 		WelcomeMessage = malloc(Length);
+#if defined(MIYOOMINI)
+		while ((NewLength = snprintf(WelcomeMessage, Length, "Press %s to play\nor %s to exit\n\nIn-game:\n%s to rise\n%s to pause\n%s to %s rumble\n%s to exit", GetEnterGamePrompt(), GetExitGamePrompt(), GetBoostPrompt(), GetPausePrompt(), GetRumblePrompt(), Rumble==true?"disable":"enable", GetExitGamePrompt())) >= Length)
+#else
 #ifdef NO_SHAKE		
 		while ((NewLength = snprintf(WelcomeMessage, Length, "Press %s to play\nor %s to exit\n\nIn-game:\n%s to rise\n%s to pause\n%s to exit", GetEnterGamePrompt(), GetExitGamePrompt(), GetBoostPrompt(), GetPausePrompt(), GetExitGamePrompt())) >= Length)	
 #else		
 		while ((NewLength = snprintf(WelcomeMessage, Length, "Press %s to play\nor %s to exit\n\nIn-game:\n%s to rise\n%s to pause\n%s to %s rumble\n%s to exit", GetEnterGamePrompt(), GetExitGamePrompt(), GetBoostPrompt(), GetPausePrompt(), GetRumblePrompt(), Rumble==true?"disable":"enable", GetExitGamePrompt())) >= Length)
+#endif
 #endif
 		{
 			Length = NewLength + 1;

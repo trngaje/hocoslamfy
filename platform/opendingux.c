@@ -24,27 +24,64 @@
 
 #include "platform.h"
 
+#ifdef MIYOOMINI
+static Uint32 LastTicks = 0;
+#endif
 void InitializePlatform(void)
 {
+#ifdef MIYOOMINI
+	LastTicks = SDL_GetTicks();
+#endif
 }
 
 Uint32 ToNextFrame(void)
 {
+#ifdef MIYOOMINI
+	SDL_Delay(8);
+	Uint32 Ticks = SDL_GetTicks();
+	Uint32 Duration = Ticks - LastTicks;
+	LastTicks = Ticks;
+	return Duration;
+#else
 	// OpenDingux waits for vertical sync by itself.
 	return 16;
+#endif
 }
+
+/*
+for miyoomini
+X shift
+y alt
+A space
+B ctrl
+select rctrl
+start enter
+L2 tab
+R2 backspace
+L e
+R t
+*/
 
 bool IsEnterGamePressingEvent(const SDL_Event* event)
 {
 	return event->type == SDL_KEYDOWN
+#ifdef MIYOOMINI
+	    && (event->key.keysym.sym == SDLK_SPACE  /* A */
+#else
 	    && (event->key.keysym.sym == SDLK_LCTRL  /* A */
+#endif
 	     || event->key.keysym.sym == SDLK_RETURN /* Start */);
 }
 
 bool IsEnterGameReleasingEvent(const SDL_Event* event)
 {
 	return event->type == SDL_KEYUP
+#ifdef MIYOOMINI
+	    && (event->key.keysym.sym == SDLK_SPACE  /* A */
+#else
 	    && (event->key.keysym.sym == SDLK_LCTRL  /* A */
+#endif
+	
 	     || event->key.keysym.sym == SDLK_RETURN /* Start */);
 }
 
@@ -57,13 +94,21 @@ bool IsExitGameEvent(const SDL_Event* event)
 {
 	return event->type == SDL_QUIT
 	    || (event->type == SDL_KEYDOWN
+#ifdef MIYOOMINI
+	     && (event->key.keysym.sym == SDLK_LCTRL   /* B */
+#else
 	     && (event->key.keysym.sym == SDLK_LALT   /* B */
+#endif
 	      || event->key.keysym.sym == SDLK_ESCAPE /* Select */));
 }
 
 const char* GetExitGamePrompt(void)
 {
+#ifdef MIYOOMINI
+	return "B/Function";
+#else
 	return "B/Select";
+#endif
 }
 
 bool IsBoostEvent(const SDL_Event* event)
@@ -89,7 +134,11 @@ bool IsPauseEvent(const SDL_Event* event)
 bool IsRumbleEvent(const SDL_Event* event)
 {
 	return event->type == SDL_KEYDOWN
+#ifdef MIYOOMINI
+	    && event->key.keysym.sym == SDLK_e;
+#else
 	    && event->key.keysym.sym == SDLK_TAB;
+#endif
 }
 
 const char* GetRumblePrompt(void)
@@ -100,7 +149,11 @@ const char* GetRumblePrompt(void)
 bool IsScoreToggleEvent(const SDL_Event* event)
 {
 	return event->type == SDL_KEYDOWN
+#ifdef MIYOOMINI
+	    && event->key.keysym.sym == SDLK_t;
+#else
 	    && event->key.keysym.sym == SDLK_BACKSPACE;
+#endif
 }
 
 const char* GetScoreTogglePrompt(void)

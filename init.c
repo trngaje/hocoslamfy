@@ -214,6 +214,8 @@ void Initialize(bool* Continue, bool* Error)
         flap_effect_id = Shake_UploadEffect(device, &flap_effect);
         flap_effect_id1 = Shake_UploadEffect(device, &flap_effect1);
         crash_effect_id = Shake_UploadEffect(device, &crash_effect);
+#elif defined(MIYOOMINI)
+	Rumble = true;
 #endif
 
 	FollowBee = false;

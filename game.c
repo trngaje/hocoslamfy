@@ -41,6 +41,12 @@
 #include <shake.h>
 #endif
 
+#ifdef MIYOOMINI
+#include <signal.h>
+#include <time.h>
+#include <sys/time.h>
+#endif
+
 static uint32_t               Score;
 
 static bool                   Boost;
@@ -75,6 +81,41 @@ static uint32_t               RectangleCount = 0;
 
 static float                  GenDistance;
 
+#ifdef MIYOOMINI
+void rumble_off_handler (int signum)
+{
+     system("echo 1 > /sys/class/gpio/gpio48/value;echo 48 > /sys/class/gpio/unexport");     
+     fprintf(stderr, "rumble_off_handler \n");
+}
+
+void rumble_on(int ms)
+{
+	struct sigaction sa;
+	struct itimerval timer;
+
+	/* Install timer_handler as the signal handler for SIGVTALRM. */
+	memset (&sa, 0, sizeof (sa));
+	sa.sa_handler = &rumble_off_handler;
+	sigaction (SIGVTALRM, &sa, NULL);
+
+	/* Configure the timer to expire after 250 msec... */
+	timer.it_value.tv_sec = 0;
+	timer.it_value.tv_usec = ms * 1000;
+	//timer.it_value.tv_usec = 2;
+
+	/* ... and every 250 msec after that. */
+	timer.it_interval.tv_sec = 0;
+	timer.it_interval.tv_usec = 0;
+			
+	/* Start a virtual timer. It counts down whenever this process is executing. */
+	setitimer (ITIMER_VIRTUAL, &timer , NULL);	
+	
+   system("echo 48 > /sys/class/gpio/export;echo out > /sys/class/gpio/gpio48/direction;echo 0 > /sys/class/gpio/gpio48/value");
+
+
+}
+#endif
+
 void GameGatherInput(bool* Continue)
 {
 	SDL_Event ev;
@@ -107,6 +148,12 @@ static void SetStatus(const enum PlayerStatus NewStatus)
     if (Rumble) {
 		  ss = Shake_Play(device, crash_effect_id);
     }
+#endif
+
+#ifdef MIYOOMINI
+	if (Rumble) {
+		rumble_on(100);
+	}
 #endif
 		PlaySFXCollision();
 	}
@@ -258,6 +305,12 @@ void GameDoLogic(bool* Continue, bool* Error, Uint32 Milliseconds)
         if (Rumble) {
 				  Shake_Play(device, flap_effect_id);
 				  Shake_Play(device, flap_effect_id1);
+        }
+#endif
+
+#ifdef MIYOOMINI
+        if (Rumble) {
+			rumble_on(38);
         }
 #endif
 				PlaySFXFly();
