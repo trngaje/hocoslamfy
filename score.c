@@ -28,7 +28,11 @@
 #include <pwd.h>
 #endif
 
+#ifdef SDL2
+#include <SDL2/SDL.h>
+#else
 #include <SDL/SDL.h>
+#endif
 
 #include "main.h"
 #include "init.h"
@@ -38,6 +42,11 @@
 #include "bg.h"
 #include "text.h"
 #include "audio.h"
+
+#ifdef SDL2
+extern SDL_Window* sdlWindow;
+extern SDL_Surface* sdlSurface;
+#endif
 
 static bool  WaitingForRelease = false;
 
@@ -121,7 +130,12 @@ void ScoreOutputFrame()
 	if (SDL_MUSTLOCK(Screen))
 		SDL_UnlockSurface(Screen);
 
+#ifdef SDL2
+	SDL_BlitScaled(Screen, NULL, sdlSurface, NULL);
+	SDL_UpdateWindowSurface(sdlWindow);
+#else
 	SDL_Flip(Screen);
+#endif
 }
 
 void ToScore(uint32_t Score, enum GameOverReason GameOverReason, uint32_t HighScore)

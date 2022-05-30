@@ -19,7 +19,11 @@
 
 #include <math.h>
 
+#ifdef SDL2
+#include <SDL2/SDL.h>
+#else
 #include <SDL/SDL.h>
+#endif
 #include "main.h"
 #include "init.h"
 #include "game.h"

@@ -24,9 +24,13 @@
 #include <inttypes.h>
 #include <sys/stat.h>
 
-
+#ifdef SDL2
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#else
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
+#endif
 
 #include "main.h"
 #include "init.h"
@@ -45,6 +49,11 @@
 #include <signal.h>
 #include <time.h>
 #include <sys/time.h>
+#endif
+
+#ifdef SDL2
+extern SDL_Window* sdlWindow;
+extern SDL_Surface* sdlSurface;
 #endif
 
 static uint32_t               Score;
@@ -564,7 +573,12 @@ if (FollowBee) {
 			break;
 	}
 
+#ifdef SDL2
+	SDL_BlitScaled(Screen, NULL, sdlSurface, NULL);
+	SDL_UpdateWindowSurface(sdlWindow);
+#else
 	SDL_Flip(Screen);
+#endif
 }
 
 void ToGame(void)

@@ -24,19 +24,19 @@
 
 #include "platform.h"
 
-#ifdef MIYOOMINI
+#if defined(MIYOOMINI) || defined(SDL2)
 static Uint32 LastTicks = 0;
 #endif
 void InitializePlatform(void)
 {
-#ifdef MIYOOMINI
+#if defined(MIYOOMINI) || defined(SDL2)
 	LastTicks = SDL_GetTicks();
 #endif
 }
 
 Uint32 ToNextFrame(void)
 {
-#ifdef MIYOOMINI
+#if defined(MIYOOMINI) || defined(SDL2)
 	SDL_Delay(8);
 	Uint32 Ticks = SDL_GetTicks();
 	Uint32 Duration = Ticks - LastTicks;
@@ -65,7 +65,7 @@ R t
 bool IsEnterGamePressingEvent(const SDL_Event* event)
 {
 	return event->type == SDL_KEYDOWN
-#ifdef MIYOOMINI
+#if defined(MIYOOMINI) || defined(SDL2)
 	    && (event->key.keysym.sym == SDLK_SPACE  /* A */
 #else
 	    && (event->key.keysym.sym == SDLK_LCTRL  /* A */
@@ -76,7 +76,7 @@ bool IsEnterGamePressingEvent(const SDL_Event* event)
 bool IsEnterGameReleasingEvent(const SDL_Event* event)
 {
 	return event->type == SDL_KEYUP
-#ifdef MIYOOMINI
+#if defined(MIYOOMINI) || defined(SDL2)
 	    && (event->key.keysym.sym == SDLK_SPACE  /* A */
 #else
 	    && (event->key.keysym.sym == SDLK_LCTRL  /* A */
@@ -94,7 +94,7 @@ bool IsExitGameEvent(const SDL_Event* event)
 {
 	return event->type == SDL_QUIT
 	    || (event->type == SDL_KEYDOWN
-#ifdef MIYOOMINI
+#if defined(MIYOOMINI) || defined(SDL2)
 	     && (event->key.keysym.sym == SDLK_LCTRL   /* B */
 #else
 	     && (event->key.keysym.sym == SDLK_LALT   /* B */
@@ -104,7 +104,7 @@ bool IsExitGameEvent(const SDL_Event* event)
 
 const char* GetExitGamePrompt(void)
 {
-#ifdef MIYOOMINI
+#if defined(MIYOOMINI) || defined(SDL2)
 	return "B/Function";
 #else
 	return "B/Select";
@@ -134,7 +134,7 @@ bool IsPauseEvent(const SDL_Event* event)
 bool IsRumbleEvent(const SDL_Event* event)
 {
 	return event->type == SDL_KEYDOWN
-#ifdef MIYOOMINI
+#if defined(MIYOOMINI) || defined(SDL2)
 	    && event->key.keysym.sym == SDLK_e;
 #else
 	    && event->key.keysym.sym == SDLK_TAB;
@@ -149,7 +149,7 @@ const char* GetRumblePrompt(void)
 bool IsScoreToggleEvent(const SDL_Event* event)
 {
 	return event->type == SDL_KEYDOWN
-#ifdef MIYOOMINI
+#if defined(MIYOOMINI) || defined(SDL2)
 	    && event->key.keysym.sym == SDLK_t;
 #else
 	    && event->key.keysym.sym == SDLK_BACKSPACE;

@@ -20,11 +20,19 @@
 #include "init.h"
 
 #include <stdio.h>
+#ifdef SDL2
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_error.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mouse.h>
+#include <SDL2/SDL_video.h>
+#else
 #include <SDL/SDL.h>
 #include <SDL/SDL_error.h>
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_mouse.h>
 #include <SDL/SDL_video.h>
+#endif
 
 #include "audio.h"
 #include "bg.h"
@@ -38,6 +46,11 @@
 Shake_Device *device;
 Shake_Effect flap_effect, flap_effect1, crash_effect;
 int flap_effect_id, flap_effect_id1, crash_effect_id;
+#endif
+
+#ifdef SDL2
+SDL_Window* sdlWindow=NULL;
+SDL_Surface* sdlSurface=NULL;
 #endif
 
 static const char* BackgroundImageNames[BG_LAYER_COUNT] = {
@@ -87,10 +100,14 @@ static bool CheckImage(bool* Continue, bool* Error, const SDL_Surface* Image, co
 static SDL_Surface* ConvertSurface(bool* Continue, bool* Error, SDL_Surface* Source, const char* Name)
 {
 	SDL_Surface* Dest;
+#ifdef SDL2
+	Dest = SDL_ConvertSurfaceFormat(Source, SDL_GetWindowPixelFormat(sdlWindow), 0);
+#else
 	if (Source->format->Amask != 0)
 		Dest = SDL_DisplayFormatAlpha(Source);
 	else
 		Dest = SDL_DisplayFormat(Source);
+#endif
 	if (Dest == NULL)
 	{
 		*Continue = false;  *Error = true;
@@ -116,6 +133,15 @@ void Initialize(bool* Continue, bool* Error)
 		return;
 	} else printf("SDL initialisation succeeded\n");
 
+#ifdef SDL2
+	sdlWindow = SDL_CreateWindow("hocoslamfy",
+							  SDL_WINDOWPOS_UNDEFINED,  
+							  SDL_WINDOWPOS_UNDEFINED,  
+							  SCREEN_WIDTH, SCREEN_HEIGHT,
+							  SDL_WINDOW_OPENGL); 
+	sdlSurface = SDL_GetWindowSurface(sdlWindow);
+	Screen = SDL_CreateRGBSurface(SDL_SWSURFACE, SCREEN_WIDTH, SCREEN_HEIGHT, 32, 0, 0, 0, 0);
+#else
 	SDL_Surface* WindowIcon = LoadImage("hocoslamfy.png");
 	if (!CheckImage(Continue, Error, WindowIcon, "hocoslamfy.png"))
 		return;
@@ -132,7 +158,7 @@ void Initialize(bool* Continue, bool* Error)
 		SDL_DOUBLEBUF
 #endif
 		);
-
+#endif
 	if (Screen == NULL)
 	{
 		*Continue = false;  *Error = true;

@@ -20,8 +20,13 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#ifdef SDL2
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
+#else
 #include <SDL/SDL.h>
 #include <SDL/SDL_mixer.h>
+#endif
 
 #include "init.h"
 

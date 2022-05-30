@@ -20,7 +20,12 @@
 #include "main.h"
 
 #include <stddef.h>
+#ifdef SDL2
+#include <SDL2/SDL_events.h>
+#else
 #include <SDL/SDL_events.h>
+#endif
+
 
 #include "init.h"
 #include "platform.h"

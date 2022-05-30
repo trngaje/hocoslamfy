@@ -21,8 +21,13 @@
 #define _MAIN_H_
 
 #include <stdbool.h>
+#ifdef SDL2
+#include <SDL2/SDL_stdinc.h>
+#include <SDL2/SDL_video.h>
+#else
 #include <SDL/SDL_stdinc.h>
 #include <SDL/SDL_video.h>
+#endif
 
 #include "bg.h"
 #include "title.h"
